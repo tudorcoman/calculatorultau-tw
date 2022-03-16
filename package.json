@@ -1,0 +1,26 @@
+{
+  "name": "calculatorultau-tw",
+  "version": "1.0.0",
+  "description": "CalculatorulTau website pentru componente de calculator",
+  "keywords": "cpu, gpu, ram, componente, conectica",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tudorcoman/calculatorultau-tw.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tudorcoman/calculatorultau-tw/issues"
+  },
+  "homepage": "https://github.com/tudorcoman/calculatorultau-tw#readme",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "pg": "^8.7.3",
+    "sharp": "^0.30.3"
+  }
+}

@@ -56,6 +56,7 @@ main {
 
 .wrapper {
     display: grid;
+    width: 100%;
     gap: 20px;
     grid-template-areas:
       "sectiune1"
@@ -68,7 +69,7 @@ main {
       "sectiune8";
 }
 
-@media (min-width: 500px) {
+@media (min-width: 600px) {
     .wrapper {
       grid-template-columns: 1fr 1fr;
       grid-template-areas:
@@ -80,7 +81,7 @@ main {
     }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 900px) {
     .wrapper {
       grid-template-columns: 1fr 1fr 1fr 1fr;
       grid-template-areas:
@@ -231,11 +232,105 @@ iframe {
     display: none;
 }
 
-@media (max-width: 700px) {
+#htitle {
+    display: none;
+}
+
+@media (max-width: 800px) {
     #casuta {
         display: block;
     }
     #acasa {
         display: none;
     }
+}
+
+@media print {
+    img, figure, video, picture, iframe, .taburi-iframe  {
+        display: none;
+    }
+    #link-top {
+        display: none;
+    }
+    a, p {
+        text-decoration: none;
+    }
+    #watermark {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        color: black;
+    }
+    #watermark::after {
+        opacity: 0.4;
+        content: "Copyright Tudor \00000a Coman";
+        width: 4cm;
+        height: 1cm;
+        border: solid 3px black;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    #htitle {
+        display: block;
+        text-align: center;
+        page-break-after:avoid; 
+    }
+    ul.meniu{
+        /* display:list-items; */
+        page-break-after: always;
+    }
+
+    nav {
+        all: initial;
+    }
+
+    nav ul.meniu {
+        all: initial;
+        page-break-after: always;
+
+    }
+
+    nav ul.meniu * {
+        all: unset;
+    }
+
+    @page {
+		size: A4 portrait;
+		margin-bottom:2cm;
+		margin-top:2cm;
+		counter-increment: page;
+			
+	}
+	@page:left{
+		margin-left:3cm;
+		margin-right:1cm;
+	}
+	@page:right{
+		margin-left:1cm;
+		margin-right:3cm;
+	}
+
+    
+}
+
+#galerie-statica {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    counter-reset: nrimag;
+    /* grid-gap: 10px; */
+}
+
+#galerie-statica img {
+    width: 100%;
+}
+
+#galerie-statica figcaption {
+    counter-increment: nrimag;
+}
+
+#galerie-statica figcaption::before {
+    content: counter(nrimag, upper-alpha) ") ";
 }

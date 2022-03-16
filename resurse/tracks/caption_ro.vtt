@@ -1,0 +1,18 @@
+WEBVTT - Some title
+
+STYLE
+::cue {
+    background-color: #443073;
+}
+
+00:00.000 --> 00:03.000 align:start
+Comercializam cele mai bune <b>componente</b> de calculator!
+
+00:03.000 --> 00:08.000 align:start
+In cazul in care nu ai incredere, produsele noastre au garantie extinsa
+
+00:09.000 --> 00:14.000 align:start
+Preturile noastre sunt competitive. 
+
+00:14.500 --> 00:19.000 align:start
+Oferim suport in cazul in care nu esti hotarat. 
