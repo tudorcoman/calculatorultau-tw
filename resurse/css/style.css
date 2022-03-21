@@ -283,18 +283,18 @@ iframe {
         page-break-after: always;
     }
 
-    nav {
-        all: initial;
-    }
+    /* nav ul.meniu { */
+        /* all: initial; */
+        /* page-break-after: always; */
+    /* } */
 
-    nav ul.meniu {
-        all: initial;
+    nav ul {
+        all: revert;
         page-break-after: always;
-
     }
 
-    nav ul.meniu * {
-        all: unset;
+    nav ul.meniu>li>ul {
+        display: none;
     }
 
     @page {
@@ -313,7 +313,9 @@ iframe {
 		margin-right:3cm;
 	}
 
-    
+    .clasaprint-meniu {
+        page-break-after: always;
+    }
 }
 
 #galerie-statica {

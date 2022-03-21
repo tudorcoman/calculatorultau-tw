@@ -114,3 +114,12 @@ nav ul.meniu>li:hover>ul{
         transform: translateX(0px);
       }
 }
+
+.clasaprint-meniu {
+    position: absolute;
+    page-break-after: always;
+}
+
+ul.clasaprint-meniu>li>ul {
+    display:none;
+}
