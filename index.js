@@ -30,7 +30,7 @@ app.get("/galerie-animata.css", function(req, res) {
     var culoareAleatoare = culori[indiceAleator];
     generareRandomGalerieAnimata();
     rezScss = ejs.render(sirScss, {culoare:culoareAleatoare, nrimag:nrRandomImag});
-    console.log(rezScss);
+    // console.log(rezScss);
     var caleScss = __dirname+"/temp/galerie_animata.scss";
     fs.writeFileSync(caleScss, rezScss);
     try {
@@ -62,13 +62,18 @@ app.get("/*.ejs", function(req, res) {
     res.end();
 })
 
+app.get("/*.scss", function(req, res) {
+    // res.status(403).render("pagini/403");
+    randeazaEroare(res, 403);
+    res.end();
+})
+
 app.get(["/", "/index", "/home"], function(req, res) {
     client.query("select * from products", function(err, rezQuery) {
         if(err)
             console.log(err);
         else {
             console.log(rezQuery);
-            console.log(obImagini.imagini);
             res.render("pagini/index", {ip:req.ip, imagini:obImagini.imagini, produse:rezQuery.rows});
         }
     })
