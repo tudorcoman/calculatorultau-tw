@@ -45,26 +45,9 @@
             <% } %>
         </div>
 
-        <div id="galerie-statica">
-
         <!-- <% for(let prod of locals.produse) { %>
             <p><%- prod.nume %> <%- prod.pret %></p>
         <% } %> -->
-
-        <% var i = 0; 
-        for (let imag of locals.imagini) {
-            i += 1;
-            if (i <= 10) { %>
-                <figure>
-                    <picture>
-                        <source srcset="<%- imag.mic%>" media="(max-width:800px)" />
-                        <source srcset="<%- imag.mediu%>" media="(max-width:1200px)" />
-                        <img src="<%- imag.mare %>" title="<%- imag.titlu %>" />
-                    </picture>
-                    <figcaption><%- imag.descriere %> </figcaption>
-                </figure>
-        <% }} %>
-        </div>
 
         <section id="faq">
             <h2>Intrebari frecvente</h2>

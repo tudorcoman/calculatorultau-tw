@@ -7,7 +7,7 @@
 .galerie-a {
   width: 400px;
   height: 300px;
-  border: 4px inset purple;
+  border: 4px inset black;
   position: relative;
   overflow: hidden;
   margin-bottom: 5rem;
@@ -87,7 +87,7 @@ x%........3s
   }
   /*perioada 0-5% in care se afiseaza fara efect */
   7.142857% {
-    transform: rotateZ(0deg);
+    transform: scaleY(1) rotateZ(0deg);
   }
   /*transformare inceput disparitie*/
   12% {
@@ -97,16 +97,16 @@ x%........3s
   14.285714% {
     z-index: 10;
     opacity: 0;
-    transform: rotateZ(135deg);
+    transform: scaleY(0) rotateZ(90deg);
   }
   14.285715% {
     z-index: -10;
-    transform: rotateZ(0deg);
+    transform: scaleY(1) rotateZ(0deg);
   }
   /* il ascund cat mai in spate sa nu vina peste imaginile care erau mai sus in html decat el*/
   85.714287% {
     opacity: 0;
-    transform: rotateZ(0deg);
+    transform: scaleY(1) rotateZ(0deg);
     z-index: -10;
   }
   85.714288% {

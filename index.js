@@ -87,8 +87,9 @@ app.get("/", function(req, res) {
 
 
 function getDateFromHour(hour) {
-    // console.log(new Date().toDateString());
-    return new Date(new Date().toDateString() + ' ' + hour + ':00.000Z');
+    let v = hour.split(":");
+    let h = parseInt(v[0]), m = parseInt(v[1]);
+    return new Date().setHours(h, m);
 }
 
 function creeazaImagini(){
@@ -96,7 +97,6 @@ function creeazaImagini(){
     obImagini=JSON.parse(buf);//global
     imaginiFiltrate=[]
     console.log(obImagini);
-    //console.log(obImagini);
     for (let imag of obImagini.imagini){
         let nume_imag, extensie;
         [nume_imag, extensie ]=imag.fisier.split(".")// "abc.de".split(".") ---> ["abc","de"]
@@ -115,16 +115,7 @@ function creeazaImagini(){
         }
         
         let ore = imag.timp.split('-');
-        let incep = ore[0].split(":"), sfars = ore[1].split(":");
-        let oraInceput = parseInt(incep[0]), minuteInceput = parseInt(incep[1]), oraSfarsit = parseInt(sfars[0]), minuteSfarsit = parseInt(sfars[1]);
-        let inceput = new Date().setHours(oraInceput, minuteInceput), sfarsit = new Date().setHours(oraSfarsit, minuteSfarsit);
-
-        let now = new Date();
-
-        console.log(ore);
-        console.log(inceput);
-        console.log(sfarsit);
-        console.log(now);
+        let inceput = getDateFromHour(ore[0]), sfarsit = getDateFromHour(ore[1]), now = new Date();
 
         if (inceput <= now && now <= sfarsit) {
             imaginiFiltrate.push(imag);
