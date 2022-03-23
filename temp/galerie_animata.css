@@ -5,8 +5,8 @@
 }
 
 .galerie-a {
-  width: 400px;
-  height: 300px;
+  width: 896px;
+  height: 510px;
   border: 4px inset black;
   position: relative;
   overflow: hidden;
@@ -19,54 +19,16 @@
   background: rgba(255, 255, 255, 0.7);
   width: 100%;
   text-align: center;
+  padding: 0;
+  margin: 0;
 }
 
 .galerie-a figure {
   position: relative;
-  width: 400px;
-  height: 300px;
-}
-
-#galerie-animata figure {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 0;
-  animation-name: gal_exemplu;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-fill-mode: forwards;
-  animation-duration: 21s;
-  transform-origin: center center;
-}
-
-#galerie-animata figure:nth-of-type(7) {
-  /* cea mai de deasupra*/
-  animation-delay: 0s;
-}
-
-#galerie-animata figure:nth-of-type(6) {
-  animation-delay: 3s;
-}
-
-#galerie-animata figure:nth-of-type(5) {
-  animation-delay: 6s;
-}
-
-#galerie-animata figure:nth-of-type(4) {
-  animation-delay: 9s;
-}
-
-#galerie-animata figure:nth-of-type(3) {
-  animation-delay: 12s;
-}
-
-#galerie-animata figure:nth-of-type(2) {
-  animation-delay: 15s;
-}
-
-#galerie-animata figure:nth-of-type(1) {
-  animation-delay: 18s;
+  width: 896px;
+  height: 504px;
+  padding: 0;
+  margin: 0;
 }
 
 /*cum calculam timpii:
@@ -80,46 +42,80 @@ x%........3s
 
 - calculam 100-14.285714=85.714286 - la acest moment imaginea trebuie sa se vada in spatele imaginii care se afiseaza in mod curent (ca sa se vada si cat timp se realizeaza efectul de schimbare a imaginii
 */
+@media screen and (max-width: 500px) {
+  #sectiune-galerie-animata {
+    display: none;
+  }
+}
 @keyframes gal_exemplu {
   0% {
     z-index: 10;
     opacity: 1;
   }
   /*perioada 0-5% in care se afiseaza fara efect */
-  7.142857% {
-    transform: scaleY(1) rotateZ(0deg);
+  8.333333333333334% {
+    transform: scaleX(1) rotateZ(0);
   }
   /*transformare inceput disparitie*/
-  12% {
+  12.5% {
     opacity: 1;
   }
   /* de  aici doresc sa descresc si opacitatea;*/
-  14.285714% {
+  16.666666666666668% {
     z-index: 10;
     opacity: 0;
-    transform: scaleY(0) rotateZ(90deg);
+    transform: scaleX(0) rotateZ(90deg);
   }
-  14.285715% {
+  16.666666666666668% {
     z-index: -10;
-    transform: scaleY(1) rotateZ(0deg);
+    transform: scaleX(1) rotateZ(0);
   }
-  /* il ascund cat mai in spate sa nu vina peste imaginile care erau mai sus in html decat el*/
-  85.714287% {
+  83.33333333333333% {
     opacity: 0;
-    transform: scaleY(1) rotateZ(0deg);
+    transform: scaleX(1) rotateZ(0);
     z-index: -10;
   }
-  85.714288% {
+  83.33333333333333% {
     z-index: 0;
   }
-  /*setez z-index la 0 ca sa revina la ordinea normala de afisare*/
   100% {
     opacity: 1;
     z-index: 0;
   }
 }
-@media screen and (max-width: 500px) {
-  #sectiune-galerie-animata {
-    display: none;
-  }
+#galerie-animata figure:nth-of-type(6) {
+  animation-delay: 0s;
+}
+
+#galerie-animata figure:nth-of-type(5) {
+  animation-delay: 3s;
+}
+
+#galerie-animata figure:nth-of-type(4) {
+  animation-delay: 6s;
+}
+
+#galerie-animata figure:nth-of-type(3) {
+  animation-delay: 9s;
+}
+
+#galerie-animata figure:nth-of-type(2) {
+  animation-delay: 12s;
+}
+
+#galerie-animata figure:nth-of-type(1) {
+  animation-delay: 15s;
+}
+
+#galerie-animata figure {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  animation-name: gal_exemplu;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+  animation-duration: 18s;
+  transform-origin: center center;
 }

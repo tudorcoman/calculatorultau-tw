@@ -1,0 +1,64 @@
+@media print {
+	img, figure, video, picture, iframe, #link-top, .taburi-iframe {
+		display: none;
+	}
+	a, p {
+		text-decoration: none;
+	}
+	#watermark {
+		display: block;
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		color: black;
+		&::after {
+			opacity: 0.4;
+			content: "Copyright Tudor \00000a Coman";
+			width: 4cm;
+			height: 1cm;
+			border: solid 3px black;
+			border-bottom-left-radius: 10px;
+			border-bottom-right-radius: 10px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+		}
+	}
+	#htitle {
+		display: block;
+		text-align: center;
+		page-break-after: avoid;
+	}
+	ul.meniu {
+		page-break-after: always;
+	}
+	nav {
+		ul {
+			all: revert;
+			page-break-after: always;
+		}
+		ul.meniu {
+			>li {
+				>ul {
+					display: none;
+				}
+			}
+		}
+	}
+	@page {
+		size: A4 portrait;
+		margin-bottom: 2cm;
+		margin-top: 2cm;
+		counter-increment: page;
+		:left {
+			margin-left: 3cm;
+			margin-right: 1cm;
+		}
+		:right {
+			margin-left: 1cm;
+			margin-right: 3cm;
+		}
+	}
+	.clasaprint-meniu {
+		page-break-after: always;
+	}
+}

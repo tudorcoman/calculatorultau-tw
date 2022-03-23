@@ -1,3 +1,12 @@
+@keyframes growDown {
+	0% {
+		transform: scaleY(0);
+	}
+	100% {
+		transform: scaleY(1);
+	}
+}
+
 body {
 	--culoare-text: #443073;
 	--culoare-header: #C3AEF2;
@@ -19,17 +28,24 @@ main {
 		display: table;
 	}
 }
-
 @for $i from 1 through 8 {
     #sectiune#{$i} {
         grid-area: sectiune#{$i};
     }
 }
-
 .wrapper {
 	display: grid;
+	width: 100%;
 	gap: 20px;
-	grid-template-areas: "sectiune1" "sectiune2" "sectiune3" "sectiune4" "sectiune5" "sectiune6" "sectiune7" "sectiune8";
+	grid-template-areas: 
+        "sectiune1" 
+        "sectiune2" 
+        "sectiune3" 
+        "sectiune4" 
+        "sectiune5" 
+        "sectiune6" 
+        "sectiune7" 
+        "sectiune8";
 }
 .taburi-iframe {
 	display: flex;
@@ -130,32 +146,36 @@ iframe {
 #casuta {
 	display: none;
 }
-@media (min-width: 500px) {
+#htitle {
+	display: none;
+}
+@media (min-width: 600px) {
 	.wrapper {
 		grid-template-columns: 1fr 1fr;
-		grid-template-areas: "sectiune1  sectiune1" "sectiune2  sectiune3" "sectiune2  sectiune4" "sectiune5  sectiune6" "sectiune7  sectiune8";
+		grid-template-areas: 
+            "sectiune1  sectiune1" 
+            "sectiune2  sectiune3" 
+            "sectiune2  sectiune4" 
+            "sectiune5  sectiune6" 
+            "sectiune7  sectiune8";
 	}
 }
-@media (min-width: 700px) {
+@media (min-width: 900px) {
 	.wrapper {
 		grid-template-columns: 1fr 1fr 1fr 1fr;
-		grid-template-areas: "sectiune1  sectiune1  sectiune1  sectiune1" "sectiune2  sectiune2  sectiune3  sectiune3" "sectiune2  sectiune2  sectiune4  sectiune4" "sectiune5  sectiune6  sectiune6  sectiune7" "sectiune8  sectiune8  sectiune8  sectiune8";
+		grid-template-areas: 
+            "sectiune1  sectiune1  sectiune1  sectiune1" 
+            "sectiune2  sectiune2  sectiune3  sectiune3" 
+            "sectiune2  sectiune2  sectiune4  sectiune4" 
+            "sectiune5  sectiune6  sectiune6  sectiune7" 
+            "sectiune8  sectiune8  sectiune8  sectiune8";
 	}
 }
-@media (max-width: 700px) {
+@media (max-width: 800px) {
 	#casuta {
 		display: block;
 	}
 	#acasa {
 		display: none;
-	}
-}
-
-@keyframes growDown {
-	0% {
-		transform: scaleY(0);
-	}
-	100% {
-		transform: scaleY(1);
 	}
 }

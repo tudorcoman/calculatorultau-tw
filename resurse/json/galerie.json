@@ -5,61 +5,61 @@
 			"fisier":"computer-1.png",
 			"descriere":"Computer",
 			"titlu": "",
-            "timp": "08:00-16:00"
+            "timp": "08:00-21:00"
 		},
 		{
 			"fisier":"cpu-1.png",
 			"descriere":"Procesor 1",
 			"titlu": "",
-            "timp": "08:00-16:00"
+            "timp": "08:00-21:00"
 		},
 		{
 			"fisier":"cpu-2.png",
 			"descriere":"Procesor 2",
 			"titlu": "",
-            "timp": "08:00-16:00"
+            "timp": "08:00-21:00"
 		},
 		{
 			"fisier":"fans.png",
 			"descriere":"Ventilatoare",
 			"titlu": "Copyright © 2022 Gamer Network Limited",
-            "timp": "09:00-17:00"
+            "timp": "09:00-22:00"
 		},
 		{
 			"fisier":"gpu.png",
 			"descriere":"Placa video",
 			"titlu": "",
-            "timp": "09:00-17:00"
+            "timp": "09:00-22:00"
 		},
 		{
 			"fisier":"hdd.png",
 			"descriere":"Hard Disk",
 			"titlu": "",
-            "timp": "09:00-17:00"
+            "timp": "09:00-22:00"
 		},
 		{
 			"fisier":"pcb.png",
 			"descriere":"Circuite integrate",
 			"titlu": "",
-            "timp": "10:00-18:00"
+            "timp": "10:00-23:00"
 		},
 		{
 			"fisier":"psu.png",
 			"descriere":"Sursa de alimentare",
 			"titlu": "",
-            "timp": "10:00-18:00"
+            "timp": "10:00-23:00"
 		},
 		{
 			"fisier":"ram.png",
 			"descriere":"RAM",
 			"titlu": "",
-            "timp": "10:00-18:00"
+            "timp": "10:00-23:00"
 		},
 		{
 			"fisier":"SSD.png",
 			"descriere":"SSD",
 			"titlu": "",
-            "timp": "00:00-23:00"
+            "timp": "00:00-23:59"
 		}
 	]
 }

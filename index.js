@@ -11,6 +11,15 @@ var client = new Client({user:"tw", password: "tehniciweb", database: "calculato
 client.connect();
 app = express();
 
+function generareRandomGalerieAnimata() {
+    nrRandomImag = (1 + Math.floor(Math.random() * 3)) * 3;
+    offsetGalerieAnimata = Math.floor(Math.random() * (11 - nrRandomImag));
+    console.log(nrRandomImag);
+    console.log(offsetGalerieAnimata);
+}
+
+generareRandomGalerieAnimata();
+
 app.set("view engine", "ejs");
 app.use("/resurse", express.static(__dirname + "/resurse"))
  
@@ -19,7 +28,8 @@ app.get("/galerie-animata.css", function(req, res) {
     var culori = ["navy", "black", "purple", "grey"];
     var indiceAleator = Math.floor(Math.random() * culori.length);
     var culoareAleatoare = culori[indiceAleator];
-    rezScss = ejs.render(sirScss, {culoare:culoareAleatoare});
+    generareRandomGalerieAnimata();
+    rezScss = ejs.render(sirScss, {culoare:culoareAleatoare, nrimag:nrRandomImag});
     console.log(rezScss);
     var caleScss = __dirname+"/temp/galerie_animata.scss";
     fs.writeFileSync(caleScss, rezScss);
@@ -35,6 +45,17 @@ app.get("/galerie-animata.css", function(req, res) {
     }
 })
 
+app.get("/resurse/css/:nume.css", function(req, res) {
+    try {
+        var scss = fs.readFileSync(__dirname+"/resurse/scss/" + req.params.nume + ".scss").toString("utf8");
+        var rezCss = sass.compileString(scss).css;
+        res.setHeader('Content-Type', 'text/css');
+        res.send(rezCss);
+    } catch(err) {
+        console.log(err);
+    }
+})
+
 app.get("/*.ejs", function(req, res) {
     // res.status(403).render("pagini/403");
     randeazaEroare(res, 403);
@@ -47,7 +68,8 @@ app.get(["/", "/index", "/home"], function(req, res) {
             console.log(err);
         else {
             console.log(rezQuery);
-            res.render("pagini/index", {ip:req.ip, imagini:imaginiFiltrate, produse:rezQuery.rows});
+            console.log(obImagini.imagini);
+            res.render("pagini/index", {ip:req.ip, imagini:obImagini.imagini, produse:rezQuery.rows});
         }
     })
     
@@ -58,7 +80,7 @@ app.get("/eroare", function(req, res) {
 })
 
 app.get("/*", function(req, res){
-    res.render("pagini"+req.url, {imagini_galerie_statica: imaginiFiltrate}, function(err, rezRender){
+    res.render("pagini"+req.url, {imagini_galerie_statica: filtreazaImaginiDupaOra()}, function(err, rezRender){
         if (err){
             if(err.message.includes("Failed to lookup view")){
                 console.log(err);
@@ -95,8 +117,6 @@ function getDateFromHour(hour) {
 function creeazaImagini(){
     var buf=fs.readFileSync(__dirname+"/resurse/json/galerie.json").toString("utf8");
     obImagini=JSON.parse(buf);//global
-    imaginiFiltrate=[]
-    console.log(obImagini);
     for (let imag of obImagini.imagini){
         let nume_imag, extensie;
         [nume_imag, extensie ]=imag.fisier.split(".")// "abc.de".split(".") ---> ["abc","de"]
@@ -113,7 +133,12 @@ function creeazaImagini(){
         if (!fs.existsSync(imag.mediu)) {
             sharp(__dirname+"/"+imag.mare).resize(dim_mediu).toFile(__dirname+"/"+imag.mediu);
         }
-        
+    }
+}
+
+function filtreazaImaginiDupaOra() {
+    var imaginiFiltrate = [];
+    for (let imag of obImagini.imagini) {
         let ore = imag.timp.split('-');
         let inceput = getDateFromHour(ore[0]), sfarsit = getDateFromHour(ore[1]), now = new Date();
 
@@ -121,7 +146,7 @@ function creeazaImagini(){
             imaginiFiltrate.push(imag);
         }
     }
-    console.log(imaginiFiltrate);
+    return imaginiFiltrate;
 }
 
 function creeazaErori(){
