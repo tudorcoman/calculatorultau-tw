@@ -3,74 +3,38 @@
 $lista_transformari: ((rotateZ(0deg),rotateZ(135deg)),(skew(0deg), skew(90deg)), (scaleX(1) rotateZ(0), scaleX(0) rotateZ(90deg)),(scaleY(1) rotateZ(0deg), scaleY(0) rotateZ(90deg)));
 // $indice:math.random(list.length($lista_transformari));
 $indice: 3;
-$tri:list.nth(list.nth($lista_transformari,$indice),1);
-$trf:list.nth(list.nth($lista_transformari,$indice),2);
+// $tri:list.nth(list.nth($lista_transformari,$indice),1);
+// $trf:list.nth(list.nth($lista_transformari,$indice),2);
+
+$tri: skewX(0deg);
+$trf: skewX(90deg);
 
 @use '../resurse/scss/galerie_animata_frag' with (
-  $setare-server: <%- locals.culoare %>,
   $nrimag: <%- locals.nrimag %>
 );
 
 <%
   var timptotal = 3 * locals.nrimag;
-  var procent14 = 300/timptotal;
   var procent7 = 150/timptotal;
-  var procent85 = 100 - procent14;
-  var procent12 = (procent7 + procent14) / 2;
+  var procent92 = 100 - procent7;
 %>
 
-@keyframes gal_exemplu{ 
-  0% {z-index:10;opacity:1;} /*perioada 0-5% in care se afiseaza fara efect */
-	<%- procent7 %>% {transform:$tri;} /*transformare inceput disparitie*/
-  
-	<%- procent12 %>% {opacity:1;} /* de  aici doresc sa descresc si opacitatea;*/
-	// 14.285714%{z-index:10;opacity:0;transform:$transformare_f;}
-  <%- procent14 %>% {z-index:10;opacity:0;transform:$trf;}
-  <%- procent14 %>% {z-index:-10; transform:$tri;}
-	// 14.285715%{z-index:-10; transform:$transformare_i;}/* il ascund cat mai in spate sa nu vina peste imaginile care erau mai sus in html decat el*/
-	
-  <%- procent85 %>%{opacity:0;transform:$tri;z-index:-10;}
-  <%- procent85 %>%{z-index:0;}
-	// 85.714287%{opacity:0;transform:$transformare_i;z-index:-10;}	
-	// 85.714288%{z-index:0;}/*setez z-index la 0 ca sa revina la ordinea normala de afisare*/
-	100%{opacity:1;z-index:0;}
+@keyframes gal{ 
+	0% {z-index:10; clip-path: inset(0 50% 0 50%);} /*perioada 0-5% in care se afiseaza fara efect */
+	<%- procent7 %>% {clip-path: inset(0 0 0 0);} /*transformare inceput disparitie*/
+	//14.285714%{z-index:10;}
+	// 14.285715%{z-index:-10;}/* il ascund cat mai in spate sa nu vina peste imaginile care erau mai sus in html decat el*/
+ 
+	<%- procent92 %>% {clip-path: inset(0 0 0 0); z-index:-10;}	
+	// 92.857144%{opacity: 1; z-index:0; clip-path: inset(0 50% 0 50%);}/*setez z-index la 0 ca sa revina la ordinea normala de afisare*/
+	100%{z-index:0;}
 }
-
-// #galerie-animata figure:nth-of-type(10){/* cea mai de deasupra*/
-// 	animation-delay:0s;
-// }
-// #galerie-animata figure:nth-of-type(9){
-// 	animation-delay:3s;
-// }
-// #galerie-animata figure:nth-of-type(8){
-// 	animation-delay:6s;
-// }
-// #galerie-animata figure:nth-of-type(7){
-// 	animation-delay:9s;
-// }
-// #galerie-animata figure:nth-of-type(6){
-// 	animation-delay:12s;
-// }
-// #galerie-animata figure:nth-of-type(5){
-// 	animation-delay:15s;
-// }
-// #galerie-animata figure:nth-of-type(4){
-// 	animation-delay:18s;
-// }
-// #galerie-animata figure:nth-of-type(3){
-// 	animation-delay:21s;
-// }
-// #galerie-animata figure:nth-of-type(2){
-// 	animation-delay:24s;
-// }
-// #galerie-animata figure:nth-of-type(1){
-// 	animation-delay:27s;
-// }
 
 <% 
 var timpCurent = 0;
 for(var i = locals.nrimag; i >= 1; i -= 1) { %>
   #galerie-animata figure:nth-of-type(<%- i %>) {
+    background-color: white;
     animation-delay: <%- timpCurent %>s;
   }
   <% timpCurent += 3; 
@@ -80,11 +44,15 @@ for(var i = locals.nrimag; i >= 1; i -= 1) { %>
 	position:absolute;
 	left:0;
 	top:0;
-	z-index:0;
-	animation-name:gal_exemplu;
-	animation-timing-function:linear;
-	animation-iteration-count:infinite;
-	animation-fill-mode:forwards;
-	animation-duration:<%- timptotal %>s;	
-	transform-origin:center center;
+  z-index:0;
+  animation-name:gal;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+  animation-fill-mode:forwards;
+  animation-duration:<%- timptotal %>s;	
+  transform-origin:center center;
+
+  &:hover {
+    animation-play-state: paused;
+  }
 }

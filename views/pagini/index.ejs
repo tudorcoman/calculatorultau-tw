@@ -32,7 +32,9 @@
         </section>
 
         <div id="galerie-animata" class="galerie-a">
-            <% for (let imag of locals.imagini){  %>
+            <% for(var i = offset; i < offset + nrRandomImag; i += 1) {
+                let imag = locals.imagini[i];    
+            %>
 
                 <figure>
                     <picture>

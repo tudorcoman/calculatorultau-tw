@@ -14,8 +14,6 @@ app = express();
 function generareRandomGalerieAnimata() {
     nrRandomImag = (1 + Math.floor(Math.random() * 3)) * 3;
     offsetGalerieAnimata = Math.floor(Math.random() * (11 - nrRandomImag));
-    console.log(nrRandomImag);
-    console.log(offsetGalerieAnimata);
 }
 
 generareRandomGalerieAnimata();
@@ -30,7 +28,6 @@ app.get("/galerie-animata.css", function(req, res) {
     var culoareAleatoare = culori[indiceAleator];
     generareRandomGalerieAnimata();
     rezScss = ejs.render(sirScss, {culoare:culoareAleatoare, nrimag:nrRandomImag});
-    // console.log(rezScss);
     var caleScss = __dirname+"/temp/galerie_animata.scss";
     fs.writeFileSync(caleScss, rezScss);
     try {
@@ -74,7 +71,7 @@ app.get(["/", "/index", "/home"], function(req, res) {
             console.log(err);
         else {
             console.log(rezQuery);
-            res.render("pagini/index", {ip:req.ip, imagini:obImagini.imagini, produse:rezQuery.rows});
+            res.render("pagini/index", {ip:req.ip, imagini:obImagini.imagini, nrRandomImag: nrRandomImag, offset: offsetGalerieAnimata, produse:rezQuery.rows});
         }
     })
     
