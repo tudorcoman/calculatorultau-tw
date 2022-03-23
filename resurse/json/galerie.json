@@ -2,36 +2,64 @@
 	"cale_galerie":"resurse/img/galerie",
 	"imagini": [
 		{
-			"fisier":"briose-frisca.png",
-			"descriere":"Brioșe",
-            "luni": ["ianuarie", "februarie", "martie"]
+			"fisier":"computer-1.png",
+			"descriere":"Computer",
+			"titlu": "",
+            "timp": "08:00-16:00"
 		},
 		{
-			"fisier":"clatite.png",
-			"descriere":"Clătite cu dulceață",
-            "luni": ["martie"]
+			"fisier":"cpu-1.png",
+			"descriere":"Procesor 1",
+			"titlu": "",
+            "timp": "08:00-16:00"
 		},
 		{
-			"fisier":"gogosi.png",
-			"descriere":"Gogoși glazurate",
-            "luni": ["aprilie", "mai", "iunie"]
+			"fisier":"cpu-2.png",
+			"descriere":"Procesor 2",
+			"titlu": "",
+            "timp": "08:00-16:00"
 		},
 		{
-			"fisier":"tort-scortisoara.png",
-			"descriere":"Tort cu scorțisoară",
-            "luni": ["aprilie", "mai", "iunie"]
+			"fisier":"fans.png",
+			"descriere":"Ventilatoare",
+			"titlu": "Copyright © 2022 Gamer Network Limited",
+            "timp": "09:00-17:00"
 		},
 		{
-			"fisier":"prajitura-ciocolata.png",
-			"descriere":"Prăjitură cu ciocolată"
+			"fisier":"gpu.png",
+			"descriere":"Placa video",
+			"titlu": "",
+            "timp": "09:00-17:00"
 		},
 		{
-			"fisier":"tarta-afine.png",
-			"descriere":"Tartă cu afine"
+			"fisier":"hdd.png",
+			"descriere":"Hard Disk",
+			"titlu": "",
+            "timp": "09:00-17:00"
 		},
 		{
-			"fisier":"tort-trandafiri.png",
-			"descriere":"Tort special"
+			"fisier":"pcb.png",
+			"descriere":"Circuite integrate",
+			"titlu": "",
+            "timp": "10:00-18:00"
+		},
+		{
+			"fisier":"psu.png",
+			"descriere":"Sursa de alimentare",
+			"titlu": "",
+            "timp": "10:00-18:00"
+		},
+		{
+			"fisier":"ram.png",
+			"descriere":"RAM",
+			"titlu": "",
+            "timp": "10:00-18:00"
+		},
+		{
+			"fisier":"SSD.png",
+			"descriere":"SSD",
+			"titlu": "",
+            "timp": "00:00-23:00"
 		}
 	]
 }

@@ -1,0 +1,28 @@
+{
+    "cale_baza": "/resurse/img/erori",
+    "erori": [
+        {
+            "identificator":404,
+            "status": true,
+            "titlu":"Eroare 404",
+            "text": "Pagina ceruta nu a fost gasita. Daca credeti ca este o greseala, va rugam sa contactati administratorul de server: <a href=\"mailto:webmaster@calculatorultau.ro\">webmaster@calculatorultau.ro</a>",
+            "imagine":"lupa.png"
+        },
+        {
+            "identificator":403,
+            "status": true,
+            "titlu":"Eroare 403",
+            "text": "Nu aveti drepturi sa accesati pagina ceruta. Daca credeti ca este o greseala, va rugam sa contactati administratorul de server: <a href=\"mailto:webmaster@calculatorultau.ro\">webmaster@calculatorultau.ro",
+            "imagine":"interzis.png"
+        },
+        
+        {
+            "identificator":1,
+            "status": false,
+            "titlu":"Site în lucru",
+            "text": "Muncim, muncim!",
+            "imagine":"interzis.png"
+        }
+    ]
+}
+  

@@ -6,6 +6,7 @@
     <meta name="keywords" content="componente calculator, componente PC, procesoare, placi video, CPU, GPU, HDD, SSD, periferice, accesorii PC, procesoare, memorii, hard disk uri, placi de baza, carcase, unitati optice, ventilatoare carcasa, surse, conectica">
     <meta name="description" content="Cel mai bun loc pentru componente de PC, de la A la Z.">
     <meta name="author" content="Tudor Coman">
+    <link rel="stylesheet" href="/resurse/css/galerie_statica.css">
     <%- include("../fragmente/head.ejs"); %>
     <style>
         .responsive {
@@ -23,6 +24,22 @@
         <div id="prezentare">
             <p>CalculatorulTau este locul cel mai bun pentru cumparaturile tale de calculator, deoarece avem produse de calitate la preturi competitive. Pe acest site, veti gasi orice componente de calculator, de la A la Z: procesoare (CPU), placi video (GPU), hard disk-uri si solid state drive-uri (HDD/SSD), memorii (RAM), placi de baza, carcase, unitati optice, surse si accesorii de conectica. </p>
         </div>
+        <h2><strong>Gama noastra de produse</strong></h2>
+        <div id="galerie-statica">
+            <% var i = 0; 
+            for (let imag of locals.imagini_galerie_statica) {
+                i += 1;
+                if (i <= 10) { %>
+                    <figure>
+                        <picture>
+                            <source srcset="<%- imag.mic%>" media="(max-width:800px)" />
+                            <source srcset="<%- imag.mediu%>" media="(max-width:1200px)" />
+                            <img src="<%- imag.mare %>" title="<%- imag.titlu %>" />
+                        </picture>
+                        <figcaption><%- imag.descriere %> </figcaption>
+                    </figure>
+            <% }} %>
+        </div>  
     </div>
     <div id="sectiune2">
         <img class="responsive" width="800" src="resurse/img/motherboard.jpg" alt="motherboard">
@@ -41,9 +58,7 @@
             <p>Incepand din anul 2010, magazinul nostru a inceput vanzarile online, fiind o necesitate pentru aceasta piata. Din 2015, CalculatorulTau este exclusiv online.</p>
         </div>
     </div>
-    </div> 
-    <!-- <br />  -->
-    <!-- <br /> -->
+    </div>
 </main>
 <%- include("../fragmente/footer.ejs"); %>
 </body>

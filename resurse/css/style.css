@@ -317,22 +317,3 @@ iframe {
         page-break-after: always;
     }
 }
-
-#galerie-statica {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    counter-reset: nrimag;
-    /* grid-gap: 10px; */
-}
-
-#galerie-statica img {
-    width: 100%;
-}
-
-#galerie-statica figcaption {
-    counter-increment: nrimag;
-}
-
-#galerie-statica figcaption::before {
-    content: counter(nrimag, upper-alpha) ") ";
-}

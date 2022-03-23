@@ -4,6 +4,7 @@ const sharp = require("sharp");
 const ejs = require("ejs");
 const sass = require("sass");
 const {Client} = require("pg");
+const res = require("express/lib/response");
 
 
 var client = new Client({user:"tw", password: "tehniciweb", database: "calculatorultau", host: "localhost", port: 5432})
@@ -13,23 +14,6 @@ app = express();
 app.set("view engine", "ejs");
 app.use("/resurse", express.static(__dirname + "/resurse"))
  
-app.get("/*.ejs", function(req, res) {
-    res.status(403).render("pagini/403");
-    res.end();
-})
-
-app.get(["/", "/index", "/home"], function(req, res) {
-    client.query("select * from products", function(err, rezQuery) {
-        if(err)
-            console.log(err);
-        else {
-            console.log(rezQuery);
-            res.render("pagini/index", {ip:req.ip, imagini:obImagini.imagini, produse:rezQuery.rows});
-        }
-    })
-    
-})
-
 app.get("/galerie-animata.css", function(req, res) {
     var sirScss = fs.readFileSync(__dirname+"/resurse/scss/galerie_animata.scss").toString("utf8");
     var culori = ["navy", "black", "purple", "grey"];
@@ -41,8 +25,8 @@ app.get("/galerie-animata.css", function(req, res) {
     fs.writeFileSync(caleScss, rezScss);
     try {
         var caleCss = __dirname+"/temp/galerie_animata.css";
-        var rezCss = sass.compile(caleCss, {sourceMap:true});
-        fs.writeFileSync(caleCss, rezCss);
+        var rezCss = sass.compile(caleScss, {sourceMap:true});
+        fs.writeFileSync(caleCss, rezCss.css);
         res.setHeader('Content-Type', 'text/css');
         res.sendFile(caleCss);
     } catch (err) {
@@ -51,12 +35,35 @@ app.get("/galerie-animata.css", function(req, res) {
     }
 })
 
+app.get("/*.ejs", function(req, res) {
+    // res.status(403).render("pagini/403");
+    randeazaEroare(res, 403);
+    res.end();
+})
+
+app.get(["/", "/index", "/home"], function(req, res) {
+    client.query("select * from products", function(err, rezQuery) {
+        if(err)
+            console.log(err);
+        else {
+            console.log(rezQuery);
+            res.render("pagini/index", {ip:req.ip, imagini:imaginiFiltrate, produse:rezQuery.rows});
+        }
+    })
+    
+})
+
+app.get("/eroare", function(req, res) {
+    randeazaEroare(res, 1, "Titlu schimbat");
+})
+
 app.get("/*", function(req, res){
-    res.render("pagini"+req.url, function(err, rezRender){
+    res.render("pagini"+req.url, {imagini_galerie_statica: imaginiFiltrate}, function(err, rezRender){
         if (err){
             if(err.message.includes("Failed to lookup view")){
                 console.log(err);
-                res.status(404).render("pagini/404");
+                // res.status(404).render("pagini/404");
+                randeazaEroare(res, 404);
             }
             else{
                 
@@ -79,9 +86,15 @@ app.get("/", function(req, res) {
 })
 
 
+function getDateFromHour(hour) {
+    // console.log(new Date().toDateString());
+    return new Date(new Date().toDateString() + ' ' + hour + ':00.000Z');
+}
+
 function creeazaImagini(){
     var buf=fs.readFileSync(__dirname+"/resurse/json/galerie.json").toString("utf8");
     obImagini=JSON.parse(buf);//global
+    imaginiFiltrate=[]
     console.log(obImagini);
     //console.log(obImagini);
     for (let imag of obImagini.imagini){
@@ -100,12 +113,51 @@ function creeazaImagini(){
         if (!fs.existsSync(imag.mediu)) {
             sharp(__dirname+"/"+imag.mare).resize(dim_mediu).toFile(__dirname+"/"+imag.mediu);
         }
-
         
+        let ore = imag.timp.split('-');
+        let incep = ore[0].split(":"), sfars = ore[1].split(":");
+        let oraInceput = parseInt(incep[0]), minuteInceput = parseInt(incep[1]), oraSfarsit = parseInt(sfars[0]), minuteSfarsit = parseInt(sfars[1]);
+        let inceput = new Date().setHours(oraInceput, minuteInceput), sfarsit = new Date().setHours(oraSfarsit, minuteSfarsit);
+
+        let now = new Date();
+
+        console.log(ore);
+        console.log(inceput);
+        console.log(sfarsit);
+        console.log(now);
+
+        if (inceput <= now && now <= sfarsit) {
+            imaginiFiltrate.push(imag);
+        }
     }
+    console.log(imaginiFiltrate);
+}
+
+function creeazaErori(){
+    var buf=fs.readFileSync(__dirname+"/resurse/json/erori.json").toString("utf8");
+    obErori=JSON.parse(buf);
+    console.log(obErori);
 }
 
 creeazaImagini();
+creeazaErori();
+
+
+function randeazaEroare(res, identificator, titlu, text, imagine) {
+    var eroare = obErori.erori.find(function (elem) {
+        return elem.identificator == identificator;
+    });
+
+    titlu = titlu || (eroare & eroare.titlu) || "Eroare - eroare";
+    text = text || (eroare & eroare.text) || "A aparut o eroare. Va rugam sa contactati administratorul de server. ";
+    imagine = imagine || (eroare & (obErori.cale_baza + "/" + eroare.imagine)) || "/resurse/img/erori/interzis.png";
+
+    if (eroare && eroare.status) {
+        res.status(eroare.identificator).render("pagini/eroare_generala", {titlu: eroare.titlu, text: eroare.text, imagine: obErori.cale_baza + "/" + eroare.imagine});
+    } else {
+        res.render("pagini/eroare_generala", {titlu: titlu, text: text, imagine: imagine});
+    }    
+}
 
 app.listen(8080);
 console.log("A pornit");

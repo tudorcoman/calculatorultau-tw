@@ -7,7 +7,8 @@
     <meta name="description" content="Cel mai bun loc pentru componente de PC, de la A la Z.">
     <meta name="author" content="Tudor Coman">
     <%- include("../fragmente/head.ejs"); %>
-    <link rel="stylesheet" href="/resurse/css/tabel.css">
+    <link rel="stylesheet" href="/resurse/css/tabel.css" type="text/css">
+    <link rel="stylesheet" href="/galerie-animata.css" type="text/css">
 </head>
 <body>
 <%- include("../fragmente/header.ejs"); %>
@@ -30,27 +31,39 @@
             
         </section>
 
+        <div id="galerie-animata" class="galerie-a">
+            <% for (let imag of locals.imagini){  %>
+
+                <figure>
+                    <picture>
+                        <!-- il ia pe primul care se potriveste cu query-ul din media-->
+                        <source srcset="/<%-imag.mic%>" media="(max-width:700px)"/>
+                        <img src="/<%-imag.mare%>" alt="text"/>
+                    </picture>
+                    <figcaption><%-imag.descriere%></figcaption>
+                </figure>
+            <% } %>
+        </div>
+
         <div id="galerie-statica">
 
-        <% for(let prod of locals.produse) { %>
+        <!-- <% for(let prod of locals.produse) { %>
             <p><%- prod.nume %> <%- prod.pret %></p>
-        <% } %>
+        <% } %> -->
 
-        <% 
-        v_luni = ["ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie", "august", "septembrie", "octombrie", "noiembrie", "decembrie"]
-        for (let imag of locals.imagini) { 
-            d = new Date()
-            if (imag.luni && imag.luni.includes(v_luni[d.getMonth()])) { %>
+        <% var i = 0; 
+        for (let imag of locals.imagini) {
+            i += 1;
+            if (i <= 10) { %>
                 <figure>
                     <picture>
                         <source srcset="<%- imag.mic%>" media="(max-width:800px)" />
                         <source srcset="<%- imag.mediu%>" media="(max-width:1200px)" />
-                        <img src="<%- imag.mare %>" alt="text alternativ" />
+                        <img src="<%- imag.mare %>" title="<%- imag.titlu %>" />
                     </picture>
                     <figcaption><%- imag.descriere %> </figcaption>
                 </figure>
-            <% } %>
-        <% } %>
+        <% }} %>
         </div>
 
         <section id="faq">
