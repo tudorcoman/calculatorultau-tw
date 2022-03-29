@@ -53,6 +53,20 @@ app.get("/resurse/css/:nume.css", function(req, res) {
     }
 })
 
+app.get("/produse", function(req, res){
+    client.query("select * from produse", function(err, rezQuery) {
+        console.log(rezQuery);
+        res.render("pagini/produse", {produse:rezQuery.rows})
+    });
+})
+
+app.get("/produs/:id", function(req, res) {
+    client.query(`select * from produse where id= ${req.params.id}`, function(err, rezQuery) {
+        console.log(rezQuery);
+        res.render("pagini/produs", {prod: rezQuery.rows[0]})
+    })
+})
+
 app.get("/*.ejs", function(req, res) {
     // res.status(403).render("pagini/403");
     randeazaEroare(res, 403);
