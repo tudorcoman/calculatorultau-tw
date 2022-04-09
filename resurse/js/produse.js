@@ -1,175 +1,222 @@
-window.addEventListener("DOMContentLoaded", function(){
 
+window.onload = function() {
+    document.getElementById("inp-pret").onchange = function() {
+        document.getElementById("infoRange").innerHTML = " (" + this.value + ")";
+    }
 
-    var btn=document.getElementById("filtrare");
-    btn.onclick=function(){
-        var articole=document.getElementsByClassName("produs");
-        for(let art of articole){
+    document.getElementById("filtrare").onclick = function() {
+        var valNume = document.getElementById("inp-nume").value.toLowerCase();
+        
+        var butoaneRadio = document.getElementsByName("gr_rad");
+        for(let rad of butoaneRadio) {
+            if (rad.checked) {
+                var valGreutate = rad.value;
+                break;
+            }
+        }
 
-            art.style.display="none";
+        var valPret = document.getElementById("inp-pret").value;
+        var valTip = document.getElementById("inp-tip").value;
 
-            /*
-            v=art.getElementsByClassName("nume")
-            nume=v[0]*/
-            var nume=art.getElementsByClassName("val-nume")[0];//<span class="val-nume">aa</span>
-            console.log(nume.innerHTML)
-            var conditie1=nume.innerHTML.startsWith(document.getElementById("inp-nume").value)
+        if (valGreutate != "toate") {
+            var minGreutate, maxGreutate;
+            [minGreutate, maxGreutate] = valGreutate.split(":");
+            minGreutate = parseInt(minGreutate);
+            maxGreutate = parseInt(maxGreutate);
+        } else {
+            minGreutate = 0;
+            maxGreutate = 1000000000;
+        }
 
-            var pret=art.getElementsByClassName("val-pret")[0]
-            var conditie2=parseInt(pret.innerHTML) > parseInt(document.getElementById("inp-pret").value);
+        var valAn = document.getElementById("inp-an").value;
+        if (valAn != "") {
+            var an;
+            an = parseInt(valAn);
+        }
+        
+        var valTextarea = document.getElementById("inp-descriere").value.toLowerCase();
 
-            var radbtns=document.getElementsByName("gr_rad");
-            for (let rad of radbtns){
-                if (rad.checked){
-                    var valCalorii=rad.value;//poate fi 1, 2 sau 3
-                    break;
+        var articole = document.getElementsByClassName("produs");
+
+        var divMateriale = document.getElementById("filtru-materiale");
+        const mapaFiltreMateriale = new Map();
+
+        var culoriPosibile = [];
+        for (let optiune of document.getElementById("inp_culoare").getElementsByTagName("option")) {
+            if (optiune.selected)
+                culoriPosibile.push(optiune.value);
+        }
+
+        for (let inputTag of divMateriale.getElementsByTagName("input")) {
+            if(inputTag.id.startsWith("inp-") && inputTag.checked) {
+                let material = inputTag.id.slice(4);
+                let inputAre = document.getElementById("i_rad1_" + material);
+                let inputNare = document.getElementById("i_rad2_" + material);
+
+                if (inputAre.checked) {
+                    mapaFiltreMateriale.set(material, true);
+                } else if (inputNare.checked) {
+                    mapaFiltreMateriale.set(material, false);
+                }
+            }
+        }
+
+        for (let art of articole) {
+            art.style.display = "none";
+            let numeArt = art.getElementsByClassName("val-nume")[0].innerHTML.toLowerCase();
+            let cond1 = (numeArt.startsWith(valNume));
+
+            let greutateArt = parseInt(art.getElementsByClassName("val-greutate")[0].innerHTML);
+            let cond2 = (minGreutate <= greutateArt && greutateArt < maxGreutate);
+
+            let pretArt = parseFloat(art.getElementsByClassName("val-pret")[0].innerHTML);
+            let cond3 = (valPret <= pretArt);
+
+            let tipArt = art.getElementsByClassName("val-tip")[0].innerHTML;
+            let cond4 = (valTip == tipArt || valTip == "toate");
+            
+            let anArt = parseInt(art.getElementsByClassName("val-an-fabricatie")[0].innerHTML);
+            let cond5 = (!an || anArt == an);
+
+            let culoare = art.getElementsByClassName("val-culoare")[0].innerHTML;
+            let cond6 = (culoriPosibile.length == 0 || culoriPosibile.includes(culoare));
+
+            let descriereArt = art.getElementsByClassName("val-descriere")[0].innerHTML.toLowerCase();
+            let cond7 = (descriereArt.includes(valTextarea));
+            
+            let materiale = art.getElementsByClassName("val-materiale")[0].innerHTML.split(",");
+
+            let cond8 = true;
+            for (const material of mapaFiltreMateriale) {
+                if (material[1] == true) {
+                    cond8 = cond8 && (materiale.includes(material[0]));
+                } else {
+                    cond8 = cond8 && (!materiale.includes(material[0]));
                 }
             }
 
-            var caloriiArt= parseInt(art.getElementsByClassName("val-calorii")[0].innerHTML);
-            var conditie3=false;
-            switch (valCalorii){
-                case "1": conditie3= (caloriiArt<350); break;
-                case "2": conditie3= (caloriiArt>=350 && caloriiArt<700); break;
-                case "3": conditie3= (caloriiArt>=700); break;
-                default: conditie3=true;
-
-            }
-            console.log(conditie3);
-
-            var selCateg=document.getElementById("inp-categorie");
-            var conditie4= (art.getElementsByClassName("val-categorie")[0].innerHTML == selCateg.value ||  selCateg.value=="toate");
-
-
-            if(conditie1 && conditie2 && conditie3 && conditie4)
-                art.style.display="block";
-            
-        }
-    }
-    var rng=document.getElementById("inp-pret");
-    rng.onchange=function(){
-        var info = document.getElementById("infoRange");//returneaza null daca nu gaseste elementul
-        if(!info){
-            info=document.createElement("span");
-            info.id="infoRange"
-            this.parentNode.appendChild(info);
-        }
-        
-        info.innerHTML="("+this.value+")";
-    }
-
-
-
-    function sorteaza(semn){
-        var articole=document.getElementsByClassName("produs");
-        var v_articole=Array.from(articole);
-        v_articole.sort(function(a,b){
-            var nume_a=a.getElementsByClassName("val-nume")[0].innerHTML;
-            var nume_b=b.getElementsByClassName("val-nume")[0].innerHTML;
-            if(nume_a!=nume_b){
-                return semn*nume_a.localeCompare(nume_b);
-            }
-            else{
-                
-                var pret_a=parseInt(a.getElementsByClassName("val-pret")[0].innerHTML);
-                var pret_b=parseInt(b.getElementsByClassName("val-pret")[0].innerHTML);
-                return semn*(pret_a-pret_b);
-            }
-        });
-        for(let art of v_articole){
-            art.parentNode.appendChild(art);
+            let conditieFinala = (cond1 && cond2 && cond3 && cond4 && cond5 && cond6 && cond7 && cond8); 
+            if(conditieFinala)
+                art.style.display = "block";
         }
     }
 
-    var btn2=document.getElementById("sortCrescNume");
-    btn2.onclick=function(){
-        
-        sorteaza(1)
-    }
-
-    var btn3=document.getElementById("sortDescrescNume");
-    btn3.onclick=function(){
-        sorteaza(-1)
-    }
-
-
-    document.getElementById("resetare").onclick=function(){
-        //resetare inputuri
-        document.getElementById("i_rad4").checked=true;
-        document.getElementById("inp-pret").value=document.getElementById("inp-pret").min;
-        document.getElementById("infoRange").innerHTML="("+document.getElementById("inp-pret").min+")";
-
-        //de completat...
-
-
-        //resetare articole
-        var articole=document.getElementsByClassName("produs");
-        for(let art of articole){
-
-            art.style.display="block";
+    document.getElementById("resetare").onclick = function() {
+        var articole = document.getElementsByClassName("produs");
+        for (let art of articole) {
+            art.style.display = "block";
         }
-    }
-    
-    // -------------------- selectare produse cos virtual----------------------------------
-    /*
-        indicatie pentru cand avem cantitati
-        fara cantitati: "1,2,3,4" //1,2,3,4 sunt id-uri
-        cu cantitati:"1:5,2:3,3:1,4:1" // 5 produse de tipul 1, 3 produse de tipul 2, 1 produs de tipul 3...
-        putem memora: [[1,5],[2,3],[3,1],[4,1]]// un element: [id, cantitate]
 
-    */
-    ids_produse_init=localStorage.getItem("produse_selectate");
-    if(ids_produse_init)
-        ids_produse_init=ids_produse_init.split(",");//obtin vectorul de id-uri ale produselor selectate  (din cosul virtual)
-    else
-        ids_produse_init=[]
+        document.getElementById("inp-nume").value = "";
+        document.getElementById("i_rad4").checked = true;
+        document.getElementById("inp-pret").value = 0;
+        document.getElementById("infoRange").innerHTML = "(0)";
+        document.getElementById("sel-toate").selected = true;
+        document.getElementById("inp-an").value = "";
+        document.getElementById("inp-descriere").value = "";
 
-    var checkboxuri_cos = document.getElementsByClassName("select-cos");
-    for (let ch of checkboxuri_cos){
-        if (ids_produse_init.indexOf(ch.value)!=-1)
-            ch.checked=true;
-        ch.onchange=function(){
-            ids_produse=localStorage.getItem("produse_selectate")
-            if(ids_produse)
-                ids_produse=ids_produse.split(",");
+        var divMateriale = document.getElementById("filtru-materiale");
+        for (let inputTag of divMateriale.getElementsByTagName("input")) {
+            if (inputTag.id.startsWith("i_rad1"))
+                inputTag.checked = true;
             else
-                ids_produse=[]
-            console.log("Selectie veche:", ids_produse);
-            //ids_produse.map(function(elem){return parseInt(elem)});
-            //console.log(ids_produse);
-            if(ch.checked){
-                ids_produse.push(ch.value);//adaug elementele noi, selectate (bifate)
-            }
-            else{
-                ids_produse.splice(ids_produse.indexOf(ch.value), 1) //sterg elemente debifate
-            }
-            console.log("Selectie noua:",ids_produse);
-            localStorage.setItem("produse_selectate",ids_produse.join(","))
-        }
-    }
- });
-
-
- window.onkeydown=function(e){
-    console.log(e);
-    if(e.key=="c" && e.altKey==true){
-        var suma=0;
-        var articole=document.getElementsByClassName("produs");
-        for(let art of articole){
-            if(art.style.display!="none")
-                suma+=parseFloat(art.getElementsByClassName("val-pret")[0].innerHTML);
+                inputTag.checked = false;
         }
 
-        var spanSuma;
-        spanSuma=document.getElementById("numar-suma");
-        if(!spanSuma){
-            spanSuma=document.createElement("span");
-            spanSuma.innerHTML=" Suma:"+suma;//<span> Suma:...
-            spanSuma.id="numar-suma";//<span id="..."
-            document.getElementById("p-suma").appendChild(spanSuma);
-            setTimeout(function(){document.getElementById("numar-suma").remove()}, 1500);
-        }
+        for (let optionTag of document.getElementById("inp_culoare").getElementsByTagName("option"))
+            optionTag.selected = false;
     }
 
+    document.getElementById("sortCrescNume").onclick = function() {
+        sorteaza(1);
+    }
 
- }
+    document.getElementById("sortDescrescNume").onclick = function() {
+        sorteaza(-1);
+    }
+
+    /*window.onkeydown = function(e) {
+        console.log(e);
+        if(e.key == 'c' && e.ctrlKey) {
+            fa_suma();
+        }
+    }*/
+
+    document.getElementById("calculSuma").onclick = fa_suma;
+}
+
+function sorteaza(ord) {
+    var articole = document.getElementsByClassName("produs");
+    var v_articole = Array.from(articole);
+
+    /*v_articole.sort(function(a, b) {
+        let nume_a = a.getElementsByClassName("val-nume")[0].innerHTML;
+        let nume_b = b.getElementsByClassName("val-nume")[0].innerHTML;
+        let comp = nume_a.localeCompare(nume_b);
+
+        if (comp != 0)
+            return ord * comp;
+        else {
+            // se activeaza a doua cheie de sortare: pret
+            let pret_a = parseFloat(a.getElementsByClassName("val-pret")[0].innerHTML);
+            let pret_b = parseFloat(b.getElementsByClassName("val-pret")[0].innerHTML);
+            return ord * (pret_a - pret_b);
+        }
+    })*/
+
+    v_articole.sort(function(a, b) {
+        let a_c1 = calcul_c1(a), b_c1 = calcul_c1(b);
+        if (a_c1 == b_c1) {
+            let a_c2 = calcul_c2(a), b_c2 = calcul_c2(b);
+            return ord * a_c2.localeCompare(b_c2);
+        }
+        return ord * (a_c1 - b_c1);
+
+    })
+
+    for (let art of v_articole) {
+        art.parentElement.appendChild(art);
+    }
+}
+
+function fa_suma() {
+    if (! document.getElementById("psuma")) {
+        let suma = 0;
+        var articole = document.getElementsByClassName("produs");
+        for (let art of articole) {
+            if (art.style.display != "none")
+                suma += parseFloat(art.getElementsByClassName("val-pret")[0].innerHTML);
+        }
+        var pSuma = document.createElement("p");
+        pSuma.innerHTML = "<b> Suma: </b>" + suma + " RON";
+        pSuma.id = "psuma";
+        var sectiune = document.getElementById("produse");
+        sectiune.parentElement.insertBefore(pSuma, sectiune);
+        setTimeout(function() {
+            let p = document.getElementById("psuma");
+            if (p)
+                p.remove();
+        }, 2000);
+    }
+}
+
+function calcul_c1(a) {
+    return 1.0 * parseInt(a.getElementsByClassName("val-an-fabricatie")[0].innerHTML) / parseFloat(a.getElementsByClassName("val-pret")[0].innerHTML);
+}
+
+function calcul_c2(a) {
+    return a.getElementsByClassName("val-tip")[0].innerHTML;
+}
+
+(function() {
+    var days = ['Duminica','Luni','Marti','Miercuri','Joi','Vineri','Sambata'];
+
+    var months = ['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
+
+    Date.prototype.getMonthName = function() {
+        return months[ this.getMonth() ];
+    };
+    Date.prototype.getDayName = function() {
+        return days[ this.getDay() ];
+    };
+})();

@@ -32,12 +32,15 @@
             </li>
             <li><div><a href="/produse">Produse</a></div>
                 <ul>
-                    <li><a href="cpu.html">Procesoare</a></li>
-                    <li><a href="gpu.html">Placi video</a></li>
-                    <li><a href="motherboard.html">Placi de baza</a></li>
+                    <% for(let tip of locals.categoriiProduse) { %>
+                        <li><a href="/produse?categorie=<%- tip.unnest %>"><%- tip.unnest.replace(/\w/, c => c.toUpperCase()) %></a></li>
+                    <% } %>
+                    <!--<li><a href="/produse?tip=procesor">Procesoare</a></li>
+                    <li><a href="/produse?tip=conectica">Conectica</a></li>
+                    <li><a href="/produse?tip=periferice">Periferice</a></li>
                     <li><a href="case.html">Carcase</a></li>
                     <li><a href="storage.html">Stocare</a></li>
-                    <li><a href="psu.html">Surse</a></li>
+                    <li><a href="psu.html">Surse</a></li>-->
                 </ul>
             </li>
             <li><a href="#">Contact</a></li>

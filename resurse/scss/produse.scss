@@ -35,7 +35,7 @@ body {
             }
         }
         figure {
-            text-align: center;
+            text-align: left;
             img {
                 border: 1px solid grey;
             }
@@ -49,9 +49,34 @@ body {
                 font-weight:bold;
             }
         }
+
+        .rand{
+            display:flex;
+            flex-flow:row;
+        }
+          
+        .item-stanga{
+            padding:0px;
+            width:100%;
+            margin: 10px;
+        }
+
+        .item-dreapta{
+            padding:10px;
+            width: 75%;
+            margin: 10px;
+        }
+
+        ul {
+            list-style:none;
+        }
         p.categorie {
             text-align:center;
             font-weight:bold;
+        }
+        .nume-caracteristica {
+            font-weight: bold;
+            color: var(--culoare-highlights);
         }
     }
 }

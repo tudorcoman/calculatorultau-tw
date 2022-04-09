@@ -11,23 +11,35 @@ var client = new Client({user:"tw", password: "tehniciweb", database: "calculato
 client.connect();
 app = express();
 
+const obGlobal = {obImagini: null, obErori: null, nrRandomImag: null, offsetGalerieAnimata: null};
+
 function generareRandomGalerieAnimata() {
-    nrRandomImag = (1 + Math.floor(Math.random() * 3)) * 3;
-    offsetGalerieAnimata = Math.floor(Math.random() * (11 - nrRandomImag));
+    obGlobal.nrRandomImag = (1 + Math.floor(Math.random() * 3)) * 3;
+    obGlobal.offsetGalerieAnimata = Math.floor(Math.random() * (11 - obGlobal.nrRandomImag));
 }
 
 generareRandomGalerieAnimata();
 
 app.set("view engine", "ejs");
 app.use("/resurse", express.static(__dirname + "/resurse"))
- 
+app.use("/*", function(req, res, next) {
+    // res.locals.propGenerala = "asdf";
+    // next();
+
+    client.query("select * from unnest(enum_range(null::categ_produse))", function(err, rezTipuri) {
+        res.locals.categoriiProduse = rezTipuri.rows; 
+        console.log(rezTipuri.rows);
+    });
+    next();
+})
+
 app.get("/galerie-animata.css", function(req, res) {
     var sirScss = fs.readFileSync(__dirname+"/resurse/scss/galerie_animata.scss").toString("utf8");
     var culori = ["navy", "black", "purple", "grey"];
     var indiceAleator = Math.floor(Math.random() * culori.length);
     var culoareAleatoare = culori[indiceAleator];
     generareRandomGalerieAnimata();
-    rezScss = ejs.render(sirScss, {culoare:culoareAleatoare, nrimag:nrRandomImag});
+    rezScss = ejs.render(sirScss, {culoare:culoareAleatoare, nrimag:obGlobal.nrRandomImag});
     var caleScss = __dirname+"/temp/galerie_animata.scss";
     fs.writeFileSync(caleScss, rezScss);
     try {
@@ -54,9 +66,13 @@ app.get("/resurse/css/:nume.css", function(req, res) {
 })
 
 app.get("/produse", function(req, res){
-    client.query("select * from produse", function(err, rezQuery) {
-        console.log(rezQuery);
-        res.render("pagini/produse", {produse:rezQuery.rows})
+    client.query("select * from unnest(enum_range(null::tipuri_produse))", function(err, rezCateg) {
+        var cond_where = req.query.tip ? `categorie='${req.query.categorie}'` : "1=1";
+        console.log(cond_where);
+        client.query("select * from produse where "+cond_where, function(err, rezQuery) {
+            console.log(rezQuery);
+            res.render("pagini/produse", {produse:rezQuery.rows, optiuni:rezCateg.rows})
+        });
     });
 })
 
@@ -85,7 +101,7 @@ app.get(["/", "/index", "/home"], function(req, res) {
             console.log(err);
         else {
             console.log(rezQuery);
-            res.render("pagini/index", {ip:req.ip, imagini:obImagini.imagini, nrRandomImag: nrRandomImag, offset: offsetGalerieAnimata, produse:rezQuery.rows});
+            res.render("pagini/index", {ip:req.ip, imagini:obGlobal.obImagini.imagini, nrRandomImag: obGlobal.nrRandomImag, offset: obGlobal.offsetGalerieAnimata, produse:rezQuery.rows});
         }
     })
     
@@ -132,17 +148,17 @@ function getDateFromHour(hour) {
 
 function creeazaImagini(){
     var buf=fs.readFileSync(__dirname+"/resurse/json/galerie.json").toString("utf8");
-    obImagini=JSON.parse(buf);//global
-    for (let imag of obImagini.imagini){
+    obGlobal.obImagini=JSON.parse(buf);//global
+    for (let imag of obGlobal.obImagini.imagini){
         let nume_imag, extensie;
         [nume_imag, extensie ]=imag.fisier.split(".")// "abc.de".split(".") ---> ["abc","de"]
         let dim_mic=150;
         let dim_mediu=300;
         
-        imag.mic=`${obImagini.cale_galerie}/mic/${nume_imag}-${dim_mic}.webp` //nume-150.webp // "a10" b=10 "a"+b `a${b}`
-        imag.mediu=`${obImagini.cale_galerie}/mediu/${nume_imag}-${dim_mediu}.webp` //nume-150.webp // "a10" b=10 "a"+b `a${b}`
+        imag.mic=`${obGlobal.obImagini.cale_galerie}/mic/${nume_imag}-${dim_mic}.webp` //nume-150.webp // "a10" b=10 "a"+b `a${b}`
+        imag.mediu=`${obGlobal.obImagini.cale_galerie}/mediu/${nume_imag}-${dim_mediu}.webp` //nume-150.webp // "a10" b=10 "a"+b `a${b}`
 
-        imag.mare=`${obImagini.cale_galerie}/${imag.fisier}`;
+        imag.mare=`${obGlobal.obImagini.cale_galerie}/${imag.fisier}`;
         if (!fs.existsSync(imag.mic)) {
             sharp(__dirname+"/"+imag.mare).resize(dim_mic).toFile(__dirname+"/"+imag.mic);
         }
@@ -154,7 +170,7 @@ function creeazaImagini(){
 
 function filtreazaImaginiDupaOra() {
     var imaginiFiltrate = [];
-    for (let imag of obImagini.imagini) {
+    for (let imag of obGlobal.obImagini.imagini) {
         let ore = imag.timp.split('-');
         let inceput = getDateFromHour(ore[0]), sfarsit = getDateFromHour(ore[1]), now = new Date();
 
@@ -167,8 +183,8 @@ function filtreazaImaginiDupaOra() {
 
 function creeazaErori(){
     var buf=fs.readFileSync(__dirname+"/resurse/json/erori.json").toString("utf8");
-    obErori=JSON.parse(buf);
-    console.log(obErori);
+    obGlobal.obErori=JSON.parse(buf);
+    console.log(obGlobal.obErori);
 }
 
 creeazaImagini();
@@ -176,16 +192,16 @@ creeazaErori();
 
 
 function randeazaEroare(res, identificator, titlu, text, imagine) {
-    var eroare = obErori.erori.find(function (elem) {
+    var eroare = obGlobal.obErori.erori.find(function (elem) {
         return elem.identificator == identificator;
     });
 
     titlu = titlu || (eroare & eroare.titlu) || "Eroare - eroare";
     text = text || (eroare & eroare.text) || "A aparut o eroare. Va rugam sa contactati administratorul de server. ";
-    imagine = imagine || (eroare & (obErori.cale_baza + "/" + eroare.imagine)) || "/resurse/img/erori/interzis.png";
+    imagine = imagine || (eroare & (obGlobal.obErori.cale_baza + "/" + eroare.imagine)) || "/resurse/img/erori/interzis.png";
 
     if (eroare && eroare.status) {
-        res.status(eroare.identificator).render("pagini/eroare_generala", {titlu: eroare.titlu, text: eroare.text, imagine: obErori.cale_baza + "/" + eroare.imagine});
+        res.status(eroare.identificator).render("pagini/eroare_generala", {titlu: eroare.titlu, text: eroare.text, imagine: obGlobal.obErori.cale_baza + "/" + eroare.imagine});
     } else {
         res.render("pagini/eroare_generala", {titlu: titlu, text: text, imagine: imagine});
     }    
