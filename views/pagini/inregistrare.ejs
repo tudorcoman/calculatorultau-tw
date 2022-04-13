@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html  lang="ro">
+    <head>
+        <meta name="keywords" content="componente calculator, componente PC, procesoare, inregistrare, utilizatori, placi video, CPU, GPU, HDD, SSD, periferice, accesorii PC, procesoare, memorii, hard disk uri, placi de baza, carcase, unitati optice, ventilatoare carcasa, surse, conectica">
+    <meta name="description" content="Cel mai bun loc pentru componente de PC, de la A la Z.">
+    <meta name="author" content="Tudor Coman">
+        <link rel="stylesheet" href="/resurse/css/produse.css" type="text/css" />
+        <title>CalculatorulTau</title>
+        <%- include("../fragmente/head") %>     
+        <script type="text/javascript" src=/resurse/js/inregistrare.js></script>
+    </head>
+    <body>
+    <%- include("../fragmente/header") %>
+
+    <main>
+    <div class="afisaj">
+        <h1>Inregistrare utilizator</h1>
+        
+		<% //if (locals.err) { %>
+			<%-include("../fragmente/formular", {action: "/inreg"}) %>
+	<% // } %>/
+	<% if(locals.raspuns) { %>
+	<%- locals.raspuns+"<br/>"%>
+	<% } %>
+	<% if(locals.err) { %>
+	<%- locals.err %>
+	<% } %>
+    </div>
+</main>
+
+<footer>
+    <%- include("../fragmente/footer") %>
+</footer>
+
+</body>
+</html>

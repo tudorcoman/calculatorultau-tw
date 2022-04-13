@@ -1,17 +1,41 @@
 @use 'sass:list';
 @use 'sass:math';
-$lista_transformari: ((rotateZ(0deg),rotateZ(135deg)),(skew(0deg), skew(90deg)), (scaleX(1) rotateZ(0), scaleX(0) rotateZ(90deg)),(scaleY(1) rotateZ(0deg), scaleY(0) rotateZ(90deg)));
-// $indice:math.random(list.length($lista_transformari));
-$indice: 3;
-// $tri:list.nth(list.nth($lista_transformari,$indice),1);
-// $trf:list.nth(list.nth($lista_transformari,$indice),2);
 
-$tri: skewX(0deg);
-$trf: skewX(90deg);
+#sectiune-galerie-animata{
+	padding-left: var(--padding-intern);/* variabila din css-ul general*/
+	padding-right: var(--padding-intern);
+}
+.galerie-a{
+	width:896px;
+	height:520px;
+    border: 8px inset;
+    border-image: url("/resurse/img/motherboard.jpg") 30 stretch;
+	position:relative;
+	overflow:hidden;
+	margin-bottom:5rem;
+}
+.galerie-a figcaption{
+	position:absolute;
+	bottom:0;
+	background:rgba(255,255,255,0.7);
+	width:100%;
+	text-align:center;
+    padding: 0;
+    margin: 0;
+}
+.galerie-a figure{
+	position:relative;
+	width:896px;
+	height:504px;
+    padding: 0;
+    margin: 0;
+}
 
-@use '../resurse/scss/galerie_animata_frag' with (
-  $nrimag: <%- locals.nrimag %>
-);
+@media screen and (max-width:500px){
+	#sectiune-galerie-animata{
+		display: none;
+	}
+}
 
 <%
   var timptotal = 3 * locals.nrimag;

@@ -1,4 +1,11 @@
 <header>
+    <script>
+        var tema = localStorage.getItem("tema");
+        if (tema)
+            document.body.classList.add("dark");
+        else
+            document.body.classList.remove("dark");
+    </script>
     <!-- <h1>CalculatorulTau</h1> -->
     <figure>
         <img sizes="(min-width:960px) 951px, (min-width:600px) 550px, 300px"
@@ -43,6 +50,7 @@
                     <li><a href="psu.html">Surse</a></li>-->
                 </ul>
             </li>
+            <li><a href="/inregistrare">Inregistrare</a></li>
             <li><a href="#">Contact</a></li>
         </ul>
     </nav>  

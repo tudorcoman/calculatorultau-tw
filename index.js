@@ -5,9 +5,13 @@ const ejs = require("ejs");
 const sass = require("sass");
 const {Client} = require("pg");
 const res = require("express/lib/response");
+const formidable= require('formidable');
+const crypto= require('crypto');
+const session= require('express-session');
 
+const connectionString = process.env.DATABASE_URL;
+var client = new Client({connectionString, ssl: {rejectUnauthorized: false}})
 
-var client = new Client({user:"tw", password: "tehniciweb", database: "calculatorultau", host: "localhost", port: 5432})
 client.connect();
 app = express();
 
@@ -23,14 +27,13 @@ generareRandomGalerieAnimata();
 app.set("view engine", "ejs");
 app.use("/resurse", express.static(__dirname + "/resurse"))
 app.use("/*", function(req, res, next) {
-    // res.locals.propGenerala = "asdf";
-    // next();
+    res.locals.propGenerala = "asdf";
 
     client.query("select * from unnest(enum_range(null::categ_produse))", function(err, rezTipuri) {
         res.locals.categoriiProduse = rezTipuri.rows; 
         console.log(rezTipuri.rows);
+        next();
     });
-    next();
 })
 
 app.get("/galerie-animata.css", function(req, res) {
@@ -40,9 +43,9 @@ app.get("/galerie-animata.css", function(req, res) {
     var culoareAleatoare = culori[indiceAleator];
     generareRandomGalerieAnimata();
     rezScss = ejs.render(sirScss, {culoare:culoareAleatoare, nrimag:obGlobal.nrRandomImag});
-    var caleScss = __dirname+"/temp/galerie_animata.scss";
-    fs.writeFileSync(caleScss, rezScss);
-    try {
+    //var caleScss = __dirname+"/temp/galerie_animata.scss";
+    // fs.writeFileSync(caleScss, rezScss);
+    /*try {
         var caleCss = __dirname+"/temp/galerie_animata.css";
         var rezCss = sass.compile(caleScss, {sourceMap:true});
         fs.writeFileSync(caleCss, rezCss.css);
@@ -51,7 +54,10 @@ app.get("/galerie-animata.css", function(req, res) {
     } catch (err) {
         console.log(err);
         res.send("Eroare");
-    }
+    }*/
+    var rezCss = sass.compileString(rezScss).css;
+    res.setHeader('Content-Type', 'text/css');
+    res.send(rezCss);
 })
 
 app.get("/resurse/css/:nume.css", function(req, res) {
@@ -96,15 +102,7 @@ app.get("/*.scss", function(req, res) {
 })
 
 app.get(["/", "/index", "/home"], function(req, res) {
-    client.query("select * from products", function(err, rezQuery) {
-        if(err)
-            console.log(err);
-        else {
-            console.log(rezQuery);
-            res.render("pagini/index", {ip:req.ip, imagini:obGlobal.obImagini.imagini, nrRandomImag: obGlobal.nrRandomImag, offset: obGlobal.offsetGalerieAnimata, produse:rezQuery.rows});
-        }
-    })
-    
+    res.render("pagini/index", {ip:req.ip, imagini:obGlobal.obImagini.imagini, nrRandomImag: obGlobal.nrRandomImag, offset: obGlobal.offsetGalerieAnimata});
 })
 
 app.get("/eroare", function(req, res) {
@@ -137,6 +135,22 @@ app.get("/*", function(req, res){
 app.get("/", function(req, res) {
     res.write("Cerere generala");
     res.end();
+})
+
+//------------------------------utilizatori-------------------------------------------
+parolaServer = "tehniciweb";
+app.post("/inreg", function(req, res) {
+    var formular = new formidable.IncomingForm();
+    formular.parse(req, function(err, campuriText, campuriFisier) {
+        var parolaCriptata = crypto.scryptSync(campuriText.parola, parolaServer, 64).toString('hex');
+        var comandaInserare = `insert into utilizatori (username, nume, prenume, parola, email, culoare_chat) values ('${campuriText.username}', '${campuriText.nume}', '${campuriText.prenume}', '${parolaCriptata}', '${campuriText.email}', '${campuriText.culoare_chat}')`;
+        client.query(comandaInserare, function(err, rezInserare) {
+            if(err)
+                console.log(err);
+            res.send("OKAY");
+        });
+    });
+
 })
 
 
@@ -207,5 +221,6 @@ function randeazaEroare(res, identificator, titlu, text, imagine) {
     }    
 }
 
-app.listen(8080);
+var s_port = process.env.PORT || 5000;
+app.listen(s_port);
 console.log("A pornit");

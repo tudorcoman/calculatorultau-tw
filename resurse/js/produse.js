@@ -1,5 +1,5 @@
 
-window.onload = function() {
+window.addEventListener("load", function() {
     document.getElementById("inp-pret").onchange = function() {
         document.getElementById("infoRange").innerHTML = " (" + this.value + ")";
     }
@@ -143,7 +143,7 @@ window.onload = function() {
     }*/
 
     document.getElementById("calculSuma").onclick = fa_suma;
-}
+})
 
 function sorteaza(ord) {
     var articole = document.getElementsByClassName("produs");
