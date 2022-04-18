@@ -25,6 +25,22 @@
                 <button id="btn_tema">Schimba tema</button>
             </p>
 
+            <% if(!locals.utilizator) { %>
+                <form id="form_inreg"  method="post" class="date"  action="/login"  enctype="multipart/form-data">
+                    <p>
+                        <label>
+                            Username: <input type="text" name="username" id="inp-username" value="prof<%= Math.floor(Math.random()*100000) %>" required pattern="[A-Za-z0-9]+">
+                        </label>
+                    </p>
+                    <p>
+                        <label>
+                            Parola: <input id="parl" type="password" required  name="parola" value="">
+                        </label>
+                    </p>
+                    <p><input type="submit" value="Conectare"></p>
+                </form>
+            <% } %>
+
             <video width="640" height="480" controls="controls" poster="/resurse/img/motherboard.jpg">
                 <source src="/resurse/video/video.mov" type="video/mov">
                 <source src="/resurse/video/video.mp4" type="video/mp4">

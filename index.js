@@ -5,9 +5,9 @@ const ejs = require("ejs");
 const sass = require("sass");
 const {Client} = require("pg");
 const res = require("express/lib/response");
-const formidable= require('formidable');
-const crypto= require('crypto');
-const session= require('express-session');
+const formidable = require('formidable');
+const crypto = require('crypto');
+const session = require('express-session');
 
 const connectionString = process.env.DATABASE_URL;
 var client = new Client({connectionString, ssl: {rejectUnauthorized: false}})
@@ -15,7 +15,14 @@ var client = new Client({connectionString, ssl: {rejectUnauthorized: false}})
 client.connect();
 app = express();
 
-const obGlobal = {obImagini: null, obErori: null, nrRandomImag: null, offsetGalerieAnimata: null};
+app.use(session({
+    secret: 'abcdefg',//folosit de express session pentru criptarea id-ului de sesiune
+    resave: true,
+    saveUninitialized: false
+}));
+
+
+const obGlobal = {obImagini: null, obErori: null, nrRandomImag: null, offsetGalerieAnimata: null, parolaServer: "tehniciweb"};
 
 function generareRandomGalerieAnimata() {
     obGlobal.nrRandomImag = (1 + Math.floor(Math.random() * 3)) * 3;
@@ -28,6 +35,7 @@ app.set("view engine", "ejs");
 app.use("/resurse", express.static(__dirname + "/resurse"))
 app.use("/*", function(req, res, next) {
     res.locals.propGenerala = "asdf";
+    res.locals.utilizator = req.session.utilizator;
 
     client.query("select * from unnest(enum_range(null::categ_produse))", function(err, rezTipuri) {
         res.locals.categoriiProduse = rezTipuri.rows; 
@@ -138,11 +146,10 @@ app.get("/", function(req, res) {
 })
 
 //------------------------------utilizatori-------------------------------------------
-parolaServer = "tehniciweb";
 app.post("/inreg", function(req, res) {
     var formular = new formidable.IncomingForm();
     formular.parse(req, function(err, campuriText, campuriFisier) {
-        var parolaCriptata = crypto.scryptSync(campuriText.parola, parolaServer, 64).toString('hex');
+        var parolaCriptata = crypto.scryptSync(campuriText.parola, obGlobal.parolaServer, 64).toString('hex');
         var comandaInserare = `insert into utilizatori (username, nume, prenume, parola, email, culoare_chat) values ('${campuriText.username}', '${campuriText.nume}', '${campuriText.prenume}', '${parolaCriptata}', '${campuriText.email}', '${campuriText.culoare_chat}')`;
         client.query(comandaInserare, function(err, rezInserare) {
             if(err)
@@ -151,6 +158,33 @@ app.post("/inreg", function(req, res) {
         });
     });
 
+})
+
+app.post("/login", function(req, res) {
+    var formular = new formidable.IncomingForm();
+    formular.parse(req, function(err, campuriText, campuriFisier) {
+        var parolaCriptata = crypto.scryptSync(campuriText.parola, obGlobal.parolaServer, 64).toString('hex');
+        var querySelect = `select * from utilizatori where username = '${campuriText.username}' and parola = '${parolaCriptata}'`;
+        client.query(querySelect, function(err, rezSelect) {
+            if (err)
+                console.log(err);
+            else {
+                console.log(querySelect);
+                console.log(rezSelect.rows.length);
+                if (rezSelect.rows.length == 1) { // autentificare cu succes
+                    req.session.utilizator = {
+                        nume: rezSelect.rows[0].nume,
+                        prenume: rezSelect.rows[0].prenume,
+                        username: rezSelect.rows[0].username,
+                        email: rezSelect.rows[0].email,
+                        culoare_chat: rezSelect.rows[0].culoare_chat,
+                        rol: rezSelect.rows[0].rol
+                    }
+                    res.redirect("/index");
+                }
+            }
+        });
+    });
 })
 
 
