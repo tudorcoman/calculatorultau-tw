@@ -52,6 +52,14 @@
             </li>
             <li><a href="/inregistrare">Inregistrare</a></li>
             <li><a href="#">Contact</a></li>
+            <% if (locals.utilizator) { %>
+                <li><div><%- locals.utilizator.username %></div>
+                    <ul>
+                        <li><a href="/profil">Profil</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </li>
+            <% } %> 
         </ul>
     </nav>  
 </header>

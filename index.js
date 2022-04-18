@@ -187,6 +187,12 @@ app.post("/login", function(req, res) {
     });
 })
 
+app.get("/logout", function(req, res) {
+    req.session.destroy();
+    res.locals.utilizator = null;
+    res.render("pagini/logout");
+})
+
 
 function getDateFromHour(hour) {
     let v = hour.split(":");
