@@ -154,7 +154,7 @@ app.post("/inreg", function(req, res) {
         client.query(comandaInserare, function(err, rezInserare) {
             if(err)
                 console.log(err);
-            res.send("OKAY");
+            res.render("pagini/inregistrare", {raspuns: "Datele au fost introduse"});
         });
     });
 
