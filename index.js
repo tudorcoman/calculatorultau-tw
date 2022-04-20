@@ -8,6 +8,7 @@ const res = require("express/lib/response");
 const formidable = require('formidable');
 const crypto = require('crypto');
 const session = require('express-session');
+const nodemailer = require('nodemailer');
 
 const connectionString = process.env.DATABASE_URL;
 var client = new Client({connectionString, ssl: {rejectUnauthorized: false}})
@@ -17,8 +18,9 @@ app = express();
 
 app.use(session({
     secret: 'abcdefg',//folosit de express session pentru criptarea id-ului de sesiune
-    resave: true,
-    saveUninitialized: false
+    resave: false,
+    saveUninitialized: false,
+    unset: 'destroy'
 }));
 
 
@@ -36,6 +38,8 @@ app.use("/resurse", express.static(__dirname + "/resurse"))
 app.use("/*", function(req, res, next) {
     res.locals.propGenerala = "asdf";
     res.locals.utilizator = req.session.utilizator;
+    console.log(res.locals.utilizator);
+    console.log(req.session);
 
     client.query("select * from unnest(enum_range(null::categ_produse))", function(err, rezTipuri) {
         res.locals.categoriiProduse = rezTipuri.rows; 
@@ -117,29 +121,6 @@ app.get("/eroare", function(req, res) {
     randeazaEroare(res, 1, "Titlu schimbat");
 })
 
-app.get("/*", function(req, res){
-    res.render("pagini"+req.url, {imagini_galerie_statica: filtreazaImaginiDupaOra()}, function(err, rezRender){
-        if (err){
-            if(err.message.includes("Failed to lookup view")){
-                console.log(err);
-                // res.status(404).render("pagini/404");
-                randeazaEroare(res, 404);
-            }
-            else{
-                
-                res.render("pagini/eroare_generala");
-            }
-        }
-        else{
-            // console.log(rezRender);
-            res.send(rezRender);
-        }
-    });
-   
-    //console.log("generala:",req.url);
-    res.end();
-})
-
 app.get("/", function(req, res) {
     res.write("Cerere generala");
     res.end();
@@ -149,15 +130,39 @@ app.get("/", function(req, res) {
 app.post("/inreg", function(req, res) {
     var formular = new formidable.IncomingForm();
     formular.parse(req, function(err, campuriText, campuriFisier) {
-        var parolaCriptata = crypto.scryptSync(campuriText.parola, obGlobal.parolaServer, 64).toString('hex');
-        var comandaInserare = `insert into utilizatori (username, nume, prenume, parola, email, culoare_chat) values ('${campuriText.username}', '${campuriText.nume}', '${campuriText.prenume}', '${parolaCriptata}', '${campuriText.email}', '${campuriText.culoare_chat}')`;
-        client.query(comandaInserare, function(err, rezInserare) {
-            if(err)
-                console.log(err);
-            res.render("pagini/inregistrare", {raspuns: "Datele au fost introduse"});
-        });
-    });
 
+        var eroare = "";
+        if (campuriText.username == "") {
+            eroare += "Username necompletat. ";
+        }
+
+        if (!campuriText.username.match(new RegExp("^[A-Za-z0-9]+$"))) {
+            eroare += "Username nu contine caracterele cerute. ";
+        }
+        
+        if (eroare == "") {
+            queryUtiliz = `select username from utilizatori where username='${campuriText.username}'`;
+            client.query(queryUtiliz, function(err, rezUtiliz) {
+                if (rezUtiliz.rows.length != 0) {
+                    eroare += "Username-ul mai exista. ";
+                } else {
+                    var parolaCriptata = crypto.scryptSync(campuriText.parola, obGlobal.parolaServer, 64).toString('hex');
+                    var comandaInserare = `insert into utilizatori (username, nume, prenume, parola, email, culoare_chat) values ('${campuriText.username}', '${campuriText.nume}', '${campuriText.prenume}', '${parolaCriptata}', '${campuriText.email}', '${campuriText.culoare_chat}')`;
+                    client.query(comandaInserare, function(err, rezInserare) {
+                        if(err) {
+                            console.log(err);
+                            res.render("pagini/inregistrare", {err: "Eroare baza de date"});
+                        } else {
+                            res.render("pagini/inregistrare", {raspuns: "Datele au fost introduse"});
+                            trimiteMail(campuriText.email, "Te-ai inregistrat", "text", "");
+                        }
+                    });
+                }
+            });
+        } else {
+
+        }
+    });
 })
 
 app.post("/login", function(req, res) {
@@ -190,7 +195,31 @@ app.post("/login", function(req, res) {
 app.get("/logout", function(req, res) {
     req.session.destroy();
     res.locals.utilizator = null;
+    console.log("LOGOUT");
     res.render("pagini/logout");
+});
+
+app.get("/*", function(req, res){
+    res.render("pagini"+req.url, {imagini_galerie_statica: filtreazaImaginiDupaOra()}, function(err, rezRender){
+        if (err){
+            if(err.message.includes("Failed to lookup view")){
+                console.log(err);
+                // res.status(404).render("pagini/404");
+                randeazaEroare(res, 404);
+            }
+            else{
+                
+                res.render("pagini/eroare_generala");
+            }
+        }
+        else{
+            // console.log(rezRender);
+            res.send(rezRender);
+        }
+    });
+   
+    //console.log("generala:",req.url);
+    res.end();
 })
 
 
@@ -259,6 +288,30 @@ function randeazaEroare(res, identificator, titlu, text, imagine) {
     } else {
         res.render("pagini/eroare_generala", {titlu: titlu, text: text, imagine: imagine});
     }    
+}
+
+async function trimiteMail(email, subiect, mesajText, mesajHtml, atasamente=[]){
+    var transp= nodemailer.createTransport({
+        service: "gmail",
+        secure: false,
+        auth:{//date login
+            user:obGlobal.emailServer,
+            pass:"rwgmgkldxnarxrgu"
+        },
+        tls:{
+            rejectUnauthorized:false
+        }
+    });
+    //genereaza html
+    await transp.sendMail({
+        from:obGlobal.emailServer,
+        to:email,
+        subject:subiect,//"Te-ai inregistrat cu succes",
+        text:mesajText, //"Username-ul tau este "+username
+        html: mesajHtml,// `<h1>Salut!</h1><p style='color:blue'>Username-ul tau este ${username}.</p> <p><a href='http://${numeDomeniu}/cod/${username}/${token}'>Click aici pentru confirmare</a></p>`,
+        attachments: atasamente
+    })
+    console.log("trimis mail");
 }
 
 var s_port = process.env.PORT || 5000;
