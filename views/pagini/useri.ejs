@@ -17,37 +17,44 @@
 
 		<table id="useri">
 		  <tr>
-			<th>id</th><th>Username</th><th>Nume</th><th>Prenume</th><th>Data</th><th>Rol</th>
+			<th>id</th><th>Username</th><th>Nume</th><th>Email</th><th>Blocat</th><th>Blocheaza/deblocheaza</th>
 		  </tr>
 
 		  <% for (var i = 0; i < useri.length; i++) { 
 				if(useri[i].rol=="comun"){
 				%>
 				<tr>
-				  <td><%= useri[i].id %></td>
-				  <td><%= useri[i].username %></td>
-				  <td><%= useri[i].nume %></td>
-				  <td><%= useri[i].email %></td>
-				  <%  
-					d=new Date(useri[i].data_adaugare)
-					sir_data=`${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`
-				  %>
-				  <td><%=  sir_data %></td>
-				   <td><%=  useri[i].rol %></td>
+					<td><%= useri[i].id %></td>
+				  	<td><%= useri[i].username %></td>
+				  	<td><%= useri[i].nume %></td>
+				  	<td><%= useri[i].email %></td>
+				  	<td><%= useri[i].blocat %></td>
+				  	<td>
+						<form id="blocheaza-user-<%- useri[i].id %>" method="post" action="/blocheaza_utiliz">
+							<input type="hidden" name="id_utiliz" value="<%- useri[i].id %>">
+							<input type="hidden" name="email" value="<%- useri[i].email %>">
+							<input type="hidden" name="blocat" value="<%- useri[i].blocat %>">
+							<% if (useri[i].blocat) { %>
+								<input type="submit" value="Deblocheaza">
+							<% } else { %>
+								<input type="submit" value="Blocheaza">
+							<% } %>
+						</form>
+					</td>
 				</tr> 
    
 				<% } %>			
 		  <% } %>
 		</table>
 		
-		<p>Sterge utilizator</p>
+		<!-- <p>Sterge utilizator</p>
 		<form id="sterge" method="post" action="/sterge_utiliz">
 			<label>
 				Id: <input type="text" name="id_utiliz" value="">
 			</label>
 			
 			<input type="submit" value="Submit">
-		</form>
+		</form> -->
 	</div>
 </main>
 

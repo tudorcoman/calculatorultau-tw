@@ -1,10 +1,14 @@
 <header>
     <script>
         var tema = localStorage.getItem("tema");
-        if (tema)
+        if (tema) {
             document.body.classList.add("dark");
-        else
+            this.innerHTML = 'Tema: <i class="fa-solid fa-moon"></i>';
+        }
+        else {
             document.body.classList.remove("dark");
+            this.innerHTML = 'Tema: <i class="fa-solid fa-sun"></i>';
+        }
     </script>
     <!-- <h1>CalculatorulTau</h1> -->
     <figure>
@@ -12,7 +16,7 @@
             srcset="/resurse/logo/logo-web.png 951w, /resurse/logo/logo-tablet.png 600w, /resurse/logo/logo-phone.png 300w"
             src="/resurse/logo/logo-phone.jpg"
             alt="calculatorultau">
-        <figcaption>calculatorultau.ro</figcaption>
+        <!-- <figcaption>calculatorultau.ro</figcaption> -->
     </figure>
     <h1 id="htitle">CalculatorulTau</h1>
     <nav>  
@@ -50,16 +54,48 @@
                     <li><a href="psu.html">Surse</a></li>-->
                 </ul>
             </li>
-            <li><a href="/inregistrare">Inregistrare</a></li>
+            <% if(locals.utilizator && locals.utilizator.rol=="admin") { %>
+            <li><a href="/useri">Useri</a></li>
+            <% } %>
+            <li><a id="btn_tema">Tema: <i class="fa-solid fa-sun"></i></a></li>
             <li><a href="#">Contact</a></li>
             <% if (locals.utilizator) { %>
-                <li><div><%- locals.utilizator.username %></div>
+                <li><div id="username-button"> <img src="/profilepicture" width="32" height="32" onerror="this.style.display = 'none';"> <%- locals.utilizator.username %></div>
                     <ul>
                         <li><a href="/profil">Profil</a></li>
                         <li><a href="/logout">Logout</a></li>
                     </ul>
                 </li>
-            <% } %> 
+                <script>
+                    document.getElementById("username-button").addEventListener("mouseover", function() {
+                        this.innerHTML = "<%- locals.utilizator.prenume %> <%- locals.utilizator.nume %>";
+                    });
+                    document.getElementById("username-button").addEventListener("mouseout", function() {
+                        this.innerHTML = "<img src=\"/profilepicture\" width=\"32\" onerror=\"this.style.display = 'none';\" height=\"32\"> <%- locals.utilizator.username %>";
+                    });
+                </script>
+            <% } else { %>
+            <li><a href="/inregistrare">Inregistrare</a></li>
+            <li>
+                <a href="#">Conectare</a>
+                <ul>
+                    <form id="form_inreg"  method="post" class="date"  action="/login"  enctype="multipart/form-data">
+                        <!-- <p> -->
+                            <label>
+                                Username: <input type="text" name="username" id="inp-username" value="prof<%= Math.floor(Math.random()*100000) %>" required pattern="[A-Za-z0-9]+">
+                            </label>
+                            <br>
+                        <!-- </p> -->
+                        <!-- <p> -->
+                            <label>
+                                Parola: <input id="parl" type="password" required  name="parola" value="">
+                            </label>
+                        <!-- </p> -->
+                        <input type="submit" value="Conectare">
+                    </form>
+                </ul>
+            </li> 
+            <% } %>
         </ul>
-    </nav>  
+    </nav>
 </header>

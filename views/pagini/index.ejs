@@ -21,25 +21,11 @@
                 Pe calculatorultau.ro gasesti orice componente de PC, precum <b>procesoare</b>, <b>placi video</b>, <b>placi de baza</b> si <b>hard diskuri</b>, dar si <b>periferice</b> si <b>accesorii</b> de PC. Daca nu esti sigur de ce anume ai nevoie, trimite-ne un mail sau suna-ne la numarul de telefon de mai jos, pentru a beneficia de o consultanta gratuita. Suntem prezenti pe piata pieselor de calculatoare de 10 ani, asa ca stim ce sa recomandam pentru nevoile oricarui client. 
             </p>
 
-            <p>
+            <!-- <p>
                 <button id="btn_tema">Schimba tema</button>
-            </p>
+            </p> -->
 
-            <% if(!locals.utilizator) { %>
-                <form id="form_inreg"  method="post" class="date"  action="/login"  enctype="multipart/form-data">
-                    <p>
-                        <label>
-                            Username: <input type="text" name="username" id="inp-username" value="prof<%= Math.floor(Math.random()*100000) %>" required pattern="[A-Za-z0-9]+">
-                        </label>
-                    </p>
-                    <p>
-                        <label>
-                            Parola: <input id="parl" type="password" required  name="parola" value="">
-                        </label>
-                    </p>
-                    <p><input type="submit" value="Conectare"></p>
-                </form>
-            <% } %>
+            <p style="color: red; font-weight: bold;"><%- locals.mesajLogin %></p>
 
             <video width="640" height="480" controls="controls" poster="/resurse/img/motherboard.jpg">
                 <source src="/resurse/video/video.mov" type="video/mov">

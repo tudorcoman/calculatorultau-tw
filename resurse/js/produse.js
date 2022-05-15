@@ -1,5 +1,20 @@
 
 window.addEventListener("load", function() {
+    for (let article of document.getElementsByTagName("article")) {
+        let productId = article.id.substring(5);
+
+        var stare1 = localStorage.getItem(`accordion-1-${productId}`);
+        if (stare1) {
+            this.document.getElementById(`accordion1Buton${productId}`).classList.toggle("collapsed");
+            this.document.getElementById(`collapseOne${productId}`).classList.toggle("show");
+        }
+
+        var stare2 = localStorage.getItem(`accordion-2-${productId}`);
+        if (stare2) {
+            this.document.getElementById(`accordion2Buton${productId}`).classList.toggle("collapsed");
+            this.document.getElementById(`collapseTwo${productId}`).classList.toggle("show");
+        }
+    }
     document.getElementById("inp-pret").onchange = function() {
         document.getElementById("infoRange").innerHTML = " (" + this.value + ")";
     }
@@ -208,6 +223,16 @@ function calcul_c2(a) {
     return a.getElementsByClassName("val-tip")[0].innerHTML;
 }
 
+function actualizeazaLocalStorage(i, productId) {
+    var numeItem = `accordion-${i}-${productId}`;
+    var stare = localStorage.getItem(numeItem);
+    if (stare) {
+        localStorage.removeItem(numeItem);
+    } else {
+        localStorage.setItem(numeItem, "open");
+    }
+}
+
 (function() {
     var days = ['Duminica','Luni','Marti','Miercuri','Joi','Vineri','Sambata'];
 
@@ -220,3 +245,21 @@ function calcul_c2(a) {
         return days[ this.getDay() ];
     };
 })();
+
+// ==================== cos virtual ====================
+
+var checkboxuri = document.getElementsByClassName("select-cos");
+for (let ch of checkboxuri) {
+    ch.onchange = function() {
+        if (this.checked) {
+            iduriCos = localStorage.getItem("cos_virtual");
+            if(!iduriCos)
+                iduriCos = [];
+            else {
+                iduriCos = iduriCos.split(",");
+            }
+            iduriCos.push(this.value);
+            localStorage.setItem("cos_virtual", iduriCos.join(","));
+        }
+    }
+}
