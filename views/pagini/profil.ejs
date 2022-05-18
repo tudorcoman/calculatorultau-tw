@@ -15,6 +15,8 @@
 				document.getElementById("inp-prenume").value="<%= locals.utilizator.prenume %>";
 				document.getElementById("inp-email").value="<%= locals.utilizator.email %>";
 				document.getElementById("p-reintrod").remove();
+				document.getElementById("parola-noua-1").style = "display: block;";
+				document.getElementById("parola-noua-2").style = "display: block;";
 				var optiuni=document.getElementById("sel-culoare").options
 				for (let opt of optiuni)
 					if (opt.value=="<%= locals.utilizator.culoare_chat %>")
@@ -30,7 +32,7 @@
 		
 			<section>
 				<h2>Profil</h2>
-				<p><%= locals.raspuns %></p>
+				<p><%= locals.mesaj %></p>
 			</section>
 			<%- include("../fragmente/formular",{action:"/profil"}) %>
 		</main>

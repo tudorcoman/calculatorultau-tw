@@ -37,6 +37,8 @@ app.use(session({
     unset: 'destroy'
 }));
 
+app.use(["/produse_cos","/cumpara"],express.json({limit:'2mb'}));
+
 function generareRandomGalerieAnimata() {
     obGlobal.nrRandomImag = (1 + Math.floor(Math.random() * 3)) * 3;
     obGlobal.offsetGalerieAnimata = Math.floor(Math.random() * (11 - obGlobal.nrRandomImag));
@@ -236,13 +238,13 @@ app.post("/inreg", function(req, res) {
             username = val;
     })
     formular.on("fileBegin", function(nume, fisier) {
+        caleUtiliz = path.join(__dirname, "poze_uploadate", username);
         if(fs.existsSync(caleUtiliz)) {
             fs.rmdirSync(caleUtiliz);
         }
         fs.mkdirSync(caleUtiliz);
-        caleUtiliz = path.join(__dirname, "poze_uploadate", username);
         let extensieFisier = fisier.originalFilename.split(".")[1];
-        numeFisier = path.join(caleUtiliz, `poza${extensieFisier}`);
+        numeFisier = path.join(caleUtiliz, `poza.${extensieFisier}`);
         fisier.filepath = numeFisier;
     })
     formular.on("file", function(nume, fisier) {
@@ -307,31 +309,98 @@ app.post("/profil", function(req, res){
         res.render("pagini/eroare_generala",{text:"Nu sunteti logat."});
         return;
     }
-    var formular= new formidable.IncomingForm();
+    var formular= new formidable.IncomingForm(), caleUtiliz, numeFisier, updateazaImag = "";
  
     formular.parse(req,function(err, campuriText, campuriFile){
-        var criptareParola=crypto.scryptSync(campuriText.parola,parolaServer, 64).toString('hex');
-        var queryUpdate=`update utilizatori set nume=$1, prenume=$2, email=$3, culoare_chat=$4 where username=$5 and parola=$6`;
-        client.query(queryUpdate, [campuriText.nume, campuriText.prenume, campuriText.email, campuriText.culoare_chat, req.session.utilizator.username, criptareParola])
-        .then(
-            rez => {
-                console.log(rez.rowCount);
-                if (rez.rowCount==0){
-                    res.render("pagini/profil",{mesaj:"Update-ul nu s-a realizat. Verificati parola introdusa."});
-                    return;
-                } else {
-                    req.session.utilizator.nume = campuriText.nume;
-                    req.session.utilizator.prenume = campuriText.prenume;
-                    req.session.utilizator.email = campuriText.email;
-                    req.session.utilizator.culoare_chat = campuriText.culoare_chat;
-                }
-                res.render("pagini/profil",{mesaj:"Update-ul s-a realizat cu succes."});
-            },
-            err => {
-                res.render("pagini/eroare_generala",{text:"Eroare baza date. Incercati mai tarziu."});
+        var criptareParola=crypto.scryptSync(campuriText.parola,obGlobal.parolaServer, 64).toString('hex');
+        if (campuriText.parolanoua != "" && campuriText.parolanoua == campuriText.rparolanoua) {
+            if (numeFisier) {
+                updateazaImag = 'imagine=$8,';
             }
-        );
-    });
+            var criptareParolaNoua = crypto.scryptSync(campuriText.parolanoua, obGlobal.parolaServer, 64).toString('hex');
+            var queryUpdate=`update utilizatori set ${updateazaImag} nume=$1, prenume=$2, email=$3, culoare_chat=$4, parola=$7 where username=$5 and parola=$6`;
+            console.log(queryUpdate);
+            var lista = [campuriText.nume, campuriText.prenume, campuriText.email, campuriText.culoare_chat, req.session.utilizator.username, criptareParola, criptareParolaNoua];
+            if (updateazaImag != "")
+                lista.push(numeFisier);
+            client.query(queryUpdate, lista)
+            .then(
+                rez => {
+                    console.log(rez.rowCount);
+                    if (rez.rowCount==0){
+                        res.render("pagini/profil",{mesaj:"Update-ul nu s-a realizat. Verificati parola introdusa."});
+                        return;
+                    } else {
+                        req.session.utilizator.nume = campuriText.nume;
+                        req.session.utilizator.prenume = campuriText.prenume;
+                        req.session.utilizator.email = campuriText.email;
+                        req.session.utilizator.culoare_chat = campuriText.culoare_chat;
+                    }
+                    res.render("pagini/profil",{mesaj:"Update-ul s-a realizat cu succes."});
+                    trimiteMail(req.session.utilizator.email, "Noile tale date", "Profilul tau a fost actualizat. Noile tale date sunt:", `<br><br>Nume: ${req.session.utilizator.nume} <br> Prenume: ${req.session.utilizator.prenume} <br> Email: ${req.session.utilizator.email}`);
+                },
+                err => {
+                    console.log(err);
+                    res.render("pagini/eroare_generala",{text:"Eroare baza date. Incercati mai tarziu."});
+                }
+            );
+        } else {
+            if (numeFisier) {
+                updateazaImag = 'imagine=$7,';
+            }
+            var queryUpdate=`update utilizatori set ${updateazaImag} nume=$1, prenume=$2, email=$3, culoare_chat=$4 where username=$5 and parola=$6`;
+            console.log(queryUpdate);
+            var lista = [campuriText.nume, campuriText.prenume, campuriText.email, campuriText.culoare_chat, req.session.utilizator.username, criptareParola];
+            if (updateazaImag != "")
+                lista.push(numeFisier);
+            client.query(queryUpdate, lista)
+            .then(
+                rez => {
+                    console.log(rez.rowCount);
+                    if (rez.rowCount==0){
+                        res.render("pagini/profil",{mesaj:"Update-ul nu s-a realizat. Verificati parola introdusa."});
+                        return;
+                    } else {
+                        req.session.utilizator.nume = campuriText.nume;
+                        req.session.utilizator.prenume = campuriText.prenume;
+                        req.session.utilizator.email = campuriText.email;
+                        req.session.utilizator.culoare_chat = campuriText.culoare_chat;
+                    }
+                    res.render("pagini/profil",{mesaj:"Update-ul s-a realizat cu succes."});
+                    trimiteMail(req.session.utilizator.email, "Noile tale date", "Profilul tau a fost actualizat. Noile tale date sunt:", `<br><br>Nume: ${req.session.utilizator.nume} <br> Prenume: ${req.session.utilizator.prenume} <br> Email: ${req.session.utilizator.email}`);
+                },
+                err => {
+                    console.log(err);
+                    res.render("pagini/eroare_generala",{text:"Eroare baza date. Incercati mai tarziu."});
+                }
+            );
+        }
+
+    })
+    formular.on("field", function(nume, val) {
+        console.log("INTRA AICI LA FIELD");
+    })
+    formular.on("fileBegin", function(nume, fisier) {
+        console.log("INTRA AICI LA FILEBEGIN");
+        console.log("CALEUTILIZ");
+        caleUtiliz = path.join(__dirname, "poze_uploadate", req.session.utilizator.username);
+        console.log("CALEUTILIZ");
+        console.log(caleUtiliz);
+        if(fs.existsSync(caleUtiliz)) {
+            fs.rmdirSync(caleUtiliz, {
+                recursive: true,
+            });
+        }
+        console.log("Director sters");
+        fs.mkdirSync(caleUtiliz);
+        let extensieFisier = fisier.originalFilename.split(".")[1];
+        numeFisier = path.join(caleUtiliz, `poza.${extensieFisier}`);
+        console.log(numeFisier);
+        fisier.filepath = numeFisier;
+    })
+    formular.on("file", function(nume, fisier) {
+        console.log("INTRA AICI LA FILE");
+    })
 });
 
 
@@ -365,6 +434,14 @@ app.get("/confirmare_inreg/:token1/:utilizator/:token2", function(req, res) {
     );
 });
 
+app.get("/admini_online", function(req, res) {
+    client.query("select username, email from utilizatori where id in (select distinct user_id from accesari) and rol='admin'", function(err, rezSelect) {
+        if(err)
+            console.log(err);
+        res.send(JSON.stringify(rezSelect.rows));
+    });
+})
+
 // ------------------------- admin -----------------------------------------
 app.get("/useri", function(req, res){
     if (req.session.utilizator && req.session.utilizator.rol == "admin") {
@@ -389,6 +466,27 @@ app.get("/useri", function(req, res){
         });
     }
 });*/
+
+app.post("/stergecont", function(req, res) {
+    if (req.session.utilizator) {
+        var formular = new formidable.IncomingForm();
+        formular.parse(req, function(err, campuriText, campuriFisier) {
+            var criptareParola=crypto.scryptSync(campuriText.parola,obGlobal.parolaServer, 64).toString('hex');
+            client.query("delete from utilizatori where id=$1 and parola=$2", [req.session.utilizator.id, criptareParola])
+            .then(rezDelete => {
+                if (rezDelete.rowCount == 0) {
+                    res.render("pagini/stergere",{mesaj:"Stergerea nu s-a realizat. Verificati parola introdusa."});
+                    return;
+                } else {
+                    trimiteMail(req.session.utilizator.email, "Contul tau a fost sters.", `Ne pare rau ca nu mai esti clientul nostru, ${req.session.utilizator.username}!`);
+                    req.session.destroy();
+                    res.locals.utilizator = null;
+                    res.redirect("/");
+                }
+            });
+        })
+    }
+})
 
 app.post("/blocheaza_utiliz", function(req, res) {
     if (req.session.utilizator && req.session.utilizator.rol == "admin") {
@@ -549,6 +647,23 @@ function getIp(req){//pentru Heroku
      return req.connection.remoteAddress;
     }
 }
+
+// ============== cos virtual =================
+app.post("/produse_cos", function(req, res) {
+    console.log(req.body);
+    if (req.body.ids_prod.length != 0) {
+        let querySelect = `select nume, descriere, pret, gramaj, imagine from prajituri where id in (${req.body.ids_prod.join(",")})`;
+        client.query(querySelect, function(err, rezQuery) {
+            if (err) {
+                console.log(err);
+                res.send("Eroare baza de date");
+            }
+            res.send(rezQuery.rows);
+        })
+    } else {
+        res.send([]);
+    }
+})
 
 app.listen(obGlobal.port);
 console.log("A pornit");

@@ -1,5 +1,22 @@
 
 window.addEventListener("load", function() {
+
+    // bifare elemente din cosul virtual (localStorage)
+
+    prod_sel = localStorage.getItem("cos_virtual");
+    if (iduriProduse) {
+        iduriProduse = iduriProduse.split(",");
+    } else {
+        iduriProduse = [];
+    }
+
+    for (let id_p of iduriProduse) {
+        var ch = document.querySelector(`[value=${id_p}].select-cos`);
+        if (ch) {
+            ch.checked = true;
+        }
+    }
+
     for (let article of document.getElementsByTagName("article")) {
         let productId = article.id.substring(5);
 
@@ -251,15 +268,21 @@ function actualizeazaLocalStorage(i, productId) {
 var checkboxuri = document.getElementsByClassName("select-cos");
 for (let ch of checkboxuri) {
     ch.onchange = function() {
-        if (this.checked) {
-            iduriCos = localStorage.getItem("cos_virtual");
-            if(!iduriCos)
-                iduriCos = [];
-            else {
-                iduriCos = iduriCos.split(",");
-            }
-            iduriCos.push(this.value);
-            localStorage.setItem("cos_virtual", iduriCos.join(","));
+        iduriCos = localStorage.getItem("cos_virtual"); // 1, 5, 3
+        // hint pentru cantitate "1|20,5|10,..."
+        if(!iduriCos)
+            iduriCos = [];
+        else {
+            iduriCos = iduriCos.split(",");
         }
+
+        if (this.checked) {
+            iduriCos.push(this.value);
+        } else {
+            var poz = iduriProduse.indexOf(this.value);
+            if (poz != -1)
+                iduriProduse.splice(poz, 1);
+        }
+        localStorage.setItem("cos_virtual", iduriCos.join(","));
     }
 }

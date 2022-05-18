@@ -25,8 +25,6 @@
                 <button id="btn_tema">Schimba tema</button>
             </p> -->
 
-            <p style="color: red; font-weight: bold;"><%- locals.mesajLogin %></p>
-
             <video width="640" height="480" controls="controls" poster="/resurse/img/motherboard.jpg">
                 <source src="/resurse/video/video.mov" type="video/mov">
                 <source src="/resurse/video/video.mp4" type="video/mp4">
@@ -149,7 +147,20 @@
 
     <div id="sectiune5">
         <h4>Utilizatori online</h4>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum nec tortor risus. Mauris hendrerit tellus at dolor tincidunt, non feugiat felis mollis. Curabitur lacus sem, iaculis eu consequat eu, hendrerit ut lectus. Maecenas dictum tempus diam, ornare bibendum massa. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam vel elit ac magna consectetur pellentesque. Pellentesque tempus arcu elit, at convallis elit eleifend sed. Pellentesque aliquet lacus orci, in sagittis est convallis et. Ut pharetra, metus vitae blandit malesuada, turpis ex vulputate odio, ac convallis libero erat sed nunc. Praesent ut magna est. Mauris sit amet iaculis neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus ullamcorper nisi id urna ultricies suscipit. Sed dignissim, mauris sit amet viverra imperdiet, velit leo viverra arcu, ut vehicula sapien metus sed nibh.</p>
+        <!-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum nec tortor risus. Mauris hendrerit tellus at dolor tincidunt, non feugiat felis mollis. Curabitur lacus sem, iaculis eu consequat eu, hendrerit ut lectus. Maecenas dictum tempus diam, ornare bibendum massa. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam vel elit ac magna consectetur pellentesque. Pellentesque tempus arcu elit, at convallis elit eleifend sed. Pellentesque aliquet lacus orci, in sagittis est convallis et. Ut pharetra, metus vitae blandit malesuada, turpis ex vulputate odio, ac convallis libero erat sed nunc. Praesent ut magna est. Mauris sit amet iaculis neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus ullamcorper nisi id urna ultricies suscipit. Sed dignissim, mauris sit amet viverra imperdiet, velit leo viverra arcu, ut vehicula sapien metus sed nibh.</p> -->
+        <ul id="utilizatori_online"></ul>
+        <script>
+            var listaNeordonata = document.getElementById("utilizatori_online");
+            fetch("/admini_online")
+                .then(response => response.json())
+                .then(data => {
+                    for (let user of data) {
+                        var li = document.createElement("li");
+                        li.innerHTML = `${user.username} (<a href="mailto:${user.email}">${user.email}</a>)`;
+                        listaNeordonata.appendChild(li);
+                    }
+                });
+        </script>
     </div>
     <div id="sectiune6">
         <h4>Date despre utilizatori si statistici</h4>

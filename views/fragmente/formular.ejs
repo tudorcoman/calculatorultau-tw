@@ -1,7 +1,7 @@
 <form id="form_inreg"  method="post" class="date"  action="<%= locals.action %>"  enctype="multipart/form-data">
     <p>
         <label>
-            Username: <input type="text" name="username" id="inp-username" value="prof<%= Math.floor(Math.random()*100000) %>" required pattern="[A-Za-z0-9]+">
+            Username: <input type="text" name="username" id="inp-username" required pattern="[A-Za-z0-9]+">
         </label>
     </p>
     <p>
@@ -24,6 +24,19 @@
             Reintroduceti parola: <input id="rparl" required type="password" name="rparola" value="">
         </label>
     </p>
+
+    <p id="parola-noua-1" style="display: none;">
+        <label>
+            Parola noua: <input id="parl" type="password"  name="parolanoua" value="">
+        </label>
+    </p>
+
+    <p id="parola-noua-2" style="display: none;">
+        <label>
+            Confirmati parola noua: <input id="parl" type="password"  name="rparolanoua" value="">
+        </label>
+    </p>
+
     <p>
         <label>
             Email: <input type="text" name="email" id="inp-email" required value="profprofprof007@gmail.com"  size="50">
